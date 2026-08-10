@@ -1,5 +1,0 @@
-watch:
-  - results/database
-  - results/query
-extensions:
-  - sql
