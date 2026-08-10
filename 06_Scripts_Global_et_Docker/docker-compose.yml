@@ -1,0 +1,14 @@
+services:
+  php:
+    container_name: docker_php
+    build: .docker/php
+    volumes:
+      - .:/home/wwwroot
+
+  db:
+    build: .docker/db
+    command: [ '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password' ]
+    container_name: docker_mysql
+    restart: always
+    ports:
+      - '6603:3306'

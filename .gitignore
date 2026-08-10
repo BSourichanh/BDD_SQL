@@ -1,1 +1,10 @@
-.idea/
+# Large CSV Datasets (do not commit GBs of CSVs)
+*.csv
+05_Donnees_CSV/*.csv
+04_Donnees_CSV/*.csv
+
+# Temporary and log files
+*.log
+__pycache__/
+*.pyc
+.DS_Store

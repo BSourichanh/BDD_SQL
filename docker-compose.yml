@@ -1,20 +1,12 @@
-version: '2'
 services:
   php:
     container_name: docker_php
     build: .docker/php
     volumes:
       - .:/home/wwwroot
-
-#  apache:
-#    container_name: docker_apache
-#    build: .docker/apache
-#    ports:
-#      - "8080:80"
-#    volumes:
-#      - .:/home/wwwroot
-#    depends_on:
-#      - php
+    ports:
+      - '8000:8000'
+    command: php -S 0.0.0.0:8000 -t /home/wwwroot/04_Iteration_4_Passage_a_l_Echelle/formulaire_recherche_sirene
 
   db:
     build: .docker/db
