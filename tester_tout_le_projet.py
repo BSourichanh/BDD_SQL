@@ -5,7 +5,8 @@ MASTER TEST RUNNER — BDD SQL, NOSQL & SPARK ANALYTIQUE (ITÉRATIONS 1 À 5)
 =============================================================================
 Ce script permet de tester en 1 seule commande l'ensemble du projet BDD SQL.
 Pour chaque étape, il affiche des explications pédagogiques claires sur ce
-qu'il est en train de vérifier.
+qu'il est en train de vérifier, et met en pause à la fin pour que le terminal
+reste ouvert et lisible.
 """
 
 import os
@@ -61,11 +62,9 @@ def test_iteration_2():
     print("    2. La politique de hachage des mots de passe avec sel (BCrypt).")
     print("    3. L'attribution des privilèges SQL restreints (GRANT / REVOKE).")
 
-    # Simulation injection SQL neutralisée
     user_input = "' OR '1'='1"
     safe_query_executed = False
     
-    # Requête préparée sécurisée
     sql = "SELECT * FROM users WHERE username = ?"
     params = (user_input,)
     if "?" in sql and isinstance(params, tuple):
@@ -102,7 +101,6 @@ def test_iteration_4():
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE etablissements (id INT, dept TEXT, nom TEXT);")
     
-    # Insert 50 000 records
     data = [(i, f"{i%95+1:02d}", f"Entreprise_{i}") for i in range(50000)]
     cursor.executemany("INSERT INTO etablissements VALUES (?,?,?)", data)
     conn.commit()
@@ -164,7 +162,12 @@ def run_master_test():
 
     print("\n" + "="*80)
     print(" 🎉 TOUS LES TESTS DES ITÉRATIONS 1 À 5 ONT ÉTÉ EXÉCUTÉS ET VALIDÉS AVEC SUCCÈS !")
-    print("="*80 + "\n")
+    print("="*80)
+    
+    try:
+        input("\n ⏸️  Appuyez sur la touche [Entrée] pour fermer la fenêtre du terminal...")
+    except (KeyboardInterrupt, EOFError):
+        pass
 
 if __name__ == '__main__':
     run_master_test()
