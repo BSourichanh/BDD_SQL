@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Analytique Spark — SIRENE Business Intelligence Personnalisable</title>
+    <title>Dashboard Analytique Spark — SIRENE Business Intelligence Filtrable</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains-Mono:wght@400;600&display=swap" rel="stylesheet">
     <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
@@ -24,37 +24,16 @@
             --border-color: rgba(139, 92, 246, 0.4);
         }
 
-        /* PALETTES DE THÈMES PERSONNALISABLES */
-        body.theme-cyan {
-            --primary: #06b6d4;
-            --border-color: rgba(6, 182, 212, 0.5);
-            --card-bg: #07131e;
-        }
-
-        body.theme-emerald {
-            --primary: #10b981;
-            --border-color: rgba(16, 185, 129, 0.5);
-            --card-bg: #061510;
-        }
-
-        body.theme-dark {
-            --primary: #64748b;
-            --border-color: rgba(255, 255, 255, 0.2);
-            --card-bg: #080808;
-            --bg-body: #000000;
-        }
-
         body {
-            background-color: var(--bg-body) !important;
+            background-color: #03050c !important;
             color: #ffffff !important;
             font-family: 'Plus Jakarta Sans', sans-serif;
             padding-bottom: 4rem;
             background-image: 
-                radial-gradient(at 15% 15%, rgba(139, 92, 246, 0.2) 0px, transparent 55%),
-                radial-gradient(at 85% 85%, rgba(6, 182, 212, 0.18) 0px, transparent 55%),
-                radial-gradient(at 50% 50%, rgba(244, 63, 94, 0.12) 0px, transparent 60%);
+                radial-gradient(at 15% 15%, rgba(139, 92, 246, 0.25) 0px, transparent 55%),
+                radial-gradient(at 85% 85%, rgba(6, 182, 212, 0.2) 0px, transparent 55%),
+                radial-gradient(at 50% 50%, rgba(244, 63, 94, 0.15) 0px, transparent 60%);
             background-attachment: fixed;
-            transition: all 0.3s ease;
         }
 
         .hero-title {
@@ -65,42 +44,72 @@
         }
 
         .glass-card {
-            background: var(--card-bg) !important;
-            border: 1px solid var(--border-color) !important;
+            background: #0b0e1e !important;
+            border: 1px solid rgba(139, 92, 246, 0.4) !important;
             border-radius: 20px;
             padding: 1.5rem;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.95);
             margin-bottom: 2rem;
             height: 100%;
             color: #ffffff !important;
-            transition: all 0.3s ease;
         }
 
-        .customizer-bar {
-            background: #090c1f !important;
-            border: 1px solid var(--border-color) !important;
-            border-radius: 20px;
-            padding: 1.2rem 1.8rem;
+        .filter-panel {
+            background: #080b1a !important;
+            border: 1px solid rgba(139, 92, 246, 0.5) !important;
+            border-radius: 22px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.95);
             margin-bottom: 2rem;
         }
 
-        .btn-custom {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.15);
+        .form-select, .form-control {
+            background-color: #040612 !important;
+            border: 1px solid rgba(139, 92, 246, 0.4) !important;
+            color: #ffffff !important;
+            border-radius: 12px;
+            padding: 0.65rem 1rem;
+        }
+
+        .form-select option {
+            background-color: #080b1a !important;
+            color: #ffffff !important;
+            padding: 0.5rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #8b5cf6 !important;
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.3) !important;
+        }
+
+        .btn-filter-apply {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            border: none;
             color: #fff !important;
-            padding: 0.45rem 0.9rem;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
+            font-weight: 700;
+            padding: 0.7rem 1.6rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4);
             transition: all 0.2s ease;
         }
 
-        .btn-custom:hover, .btn-custom.active {
-            background: var(--primary) !important;
-            border-color: var(--primary) !important;
+        .btn-filter-apply:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-filter-reset {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #cbd5e1 !important;
+            font-weight: 600;
+            padding: 0.7rem 1.2rem;
+            border-radius: 12px;
+        }
+
+        .btn-filter-reset:hover {
+            background: rgba(255,255,255,0.15);
             color: #fff !important;
-            box-shadow: 0 0 15px var(--primary);
         }
 
         .stat-value {
@@ -122,8 +131,8 @@
         .table > tbody > tr > td,
         .table > tbody > tr > th,
         .table > thead > tr > th {
-            background-color: var(--card-bg) !important;
-            --bs-table-bg: var(--card-bg) !important;
+            background-color: #0b0e1e !important;
+            --bs-table-bg: #0b0e1e !important;
             --bs-table-color: #ffffff !important;
             color: #ffffff !important;
             border-bottom-color: rgba(255, 255, 255, 0.08) !important;
@@ -180,8 +189,8 @@
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
             <div>
                 <div class="badge badge-purple mb-2">⚡ Apache Spark & Spring Boot Decisionnel Engine</div>
-                <h1 class="hero-title">Dashboard Analytique Personnalisable</h1>
-                <p class="text-muted mb-0">Exploration décisionnelle sur les données SIRENE (600,000+ établissements et 26,637 communes).</p>
+                <h1 class="hero-title">Dashboard Analytique avec Filtres Avancés</h1>
+                <p class="text-muted mb-0">Filtrage multi-critères en direct sur la base SIRENE (Département, Domaine NAF, Sièges et Recherche).</p>
             </div>
             <div class="d-flex gap-2">
                 <button type="button" class="btn btn-outline-light btn-sm" onclick="window.print()">🖨️ Imprimer le Rapport</button>
@@ -189,37 +198,73 @@
             </div>
         </div>
 
-        <!-- BARRE DE PERSONNALISATION INTERACTIVE DU DASHBOARD -->
-        <div class="customizer-bar">
-            <div class="row g-3 align-items-center">
-                <div class="col-md-4">
-                    <label class="form-label small fw-bold text-uppercase text-muted mb-1">🎨 Thème Colorimétrique</label>
-                    <div class="d-flex gap-2">
-                        <button class="btn-custom active" onclick="setTheme('purple')">🟣 Cyber Violet</button>
-                        <button class="btn-custom" onclick="setTheme('cyan')">🟦 Neon Cyan</button>
-                        <button class="btn-custom" onclick="setTheme('emerald')">🟩 Émeraude</button>
-                        <button class="btn-custom" onclick="setTheme('dark')">⬛ Noir Pur</button>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label small fw-bold text-uppercase text-muted mb-1">🔢 Taille du Top / Flop</label>
-                    <select id="selectLimit" class="form-select bg-dark text-white border-secondary" style="max-width: 200px;" onchange="updateDashboardView()">
-                        <option value="5">Top 5 Communes / Ent.</option>
-                        <option value="10" selected>Top 10 Communes / Ent.</option>
-                        <option value="15">Top 15 Communes / Ent.</option>
-                        <option value="20">Top 20 Communes / Ent.</option>
+        <!-- BARRE DE FILTRAGE MULTI-CRITÈRES INTERACTIVE -->
+        <div class="filter-panel">
+            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                <span>🔍 Filtres Analytiques de Données</span>
+                <span class="badge bg-purple ms-auto" id="activeFilterBadge">Toute la France</span>
+            </h5>
+            
+            <div class="row g-3 align-items-end">
+                <!-- FILTRE 1 : DÉPARTEMENT -->
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-uppercase text-muted">🗺️ Département</label>
+                    <select id="filterDept" class="form-select">
+                        <option value="ALL">Tous les départements (France Entière)</option>
+                        <option value="75">75 — Paris</option>
+                        <option value="74">74 — Haute-Savoie</option>
+                        <option value="69">69 — Rhône (Lyon)</option>
+                        <option value="13">13 — Bouches-du-Rhône (Marseille)</option>
+                        <option value="33">33 — Gironde (Bordeaux)</option>
+                        <option value="59">59 — Nord (Lille)</option>
+                        <option value="31">31 — Haute-Garonne (Toulouse)</option>
+                        <option value="06">06 — Alpes-Maritimes (Nice)</option>
+                        <option value="44">44 — Loire-Atlantique (Nantes)</option>
+                        <option value="34">34 — Hérault (Montpellier)</option>
+                        <option value="92">92 — Hauts-de-Seine</option>
+                        <option value="93">93 — Seine-Saint-Denis</option>
+                        <option value="94">94 — Val-de-Marne</option>
+                        <option value="97">97 — Outre-Mer (DROM-COM)</option>
                     </select>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label small fw-bold text-uppercase text-muted mb-1">👁️ Masquer / Afficher les Widgets</label>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <button class="btn-custom active" id="btnToggleMap" onclick="toggleWidget('widgetMap', 'btnToggleMap')">🗺️ Carte</button>
-                        <button class="btn-custom active" id="btnToggleTime" onclick="toggleWidget('widgetTime', 'btnToggleTime')">📈 Créations</button>
-                        <button class="btn-custom active" id="btnToggleBar" onclick="toggleWidget('widgetBar', 'btnToggleBar')">📊 Activités</button>
-                        <button class="btn-custom active" id="btnToggleTables" onclick="toggleWidget('widgetTables', 'btnToggleTables')">🏆 Top/Flop</button>
-                    </div>
+                <!-- FILTRE 2 : DOMAINE NAF -->
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-uppercase text-muted">💼 Domaine d'Activité NAF</label>
+                    <select id="filterNaf" class="form-select">
+                        <option value="ALL">Tous les secteurs d'activité</option>
+                        <option value="62.01Z">62.01Z — Programmation & Tech</option>
+                        <option value="10.71C">10.71C — Boulangerie & Pâtisserie</option>
+                        <option value="47.11D">47.11D — Supermarchés & Grande distribution</option>
+                        <option value="56.10A">56.10A — Restauration & Gastronomie</option>
+                        <option value="49.41Z">49.41Z — Transport de Fret & Logistique</option>
+                        <option value="68.20B">68.20B — Location & Immobilier</option>
+                        <option value="43.22A">43.22A — Plomberie & Chauffage</option>
+                        <option value="86.21Z">86.21Z — Santé & Médecine</option>
+                    </select>
+                </div>
+
+                <!-- FILTRE 3 : TAILLE DU TOP -->
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-uppercase text-muted">🔢 Taille des Tops</label>
+                    <select id="filterLimit" class="form-select">
+                        <option value="5">Top 5</option>
+                        <option value="10" selected>Top 10</option>
+                        <option value="15">Top 15</option>
+                        <option value="20">Top 20</option>
+                    </select>
+                </div>
+
+                <!-- FILTRE 4 : RECHERCHE TEXTUELLE -->
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold text-uppercase text-muted">🔎 Recherche Commune</label>
+                    <input type="text" id="filterSearch" class="form-control" placeholder="Ex: Paris, Annecy..." onkeyup="filterLocalData()">
+                </div>
+
+                <!-- BOUTONS D'ACTION -->
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="button" class="btn-filter-apply w-100" onclick="applyAnalyticsFilters()">⚡ Filtrer</button>
+                    <button type="button" class="btn-filter-reset" onclick="resetAnalyticsFilters()">🔄</button>
                 </div>
             </div>
         </div>
@@ -240,8 +285,8 @@
             </div>
             <div class="col-md-4">
                 <div class="glass-card">
-                    <div class="stat-value" style="color: #c4b5fd;" id="kpiTime">0.05s</div>
-                    <div class="stat-label">Temps d'Agrégation Spark In-Memory</div>
+                    <div class="stat-value" style="color: #c4b5fd;" id="kpiTime">0.04s</div>
+                    <div class="stat-label">Temps de Calcul Spark In-Memory</div>
                 </div>
             </div>
         </div>
@@ -249,7 +294,7 @@
         <!-- GRAPHIQUES WIDGETS -->
         <div class="row g-4 mb-4">
             <!-- CARTE HEATMAP DÉPARTEMENTS -->
-            <div class="col-lg-6" id="widgetMap">
+            <div class="col-lg-6">
                 <div class="glass-card">
                     <h5 class="fw-bold mb-3">🗺️ Répartition des Établissements par Département</h5>
                     <div id="plotlyHeatmap" style="height: 340px;"></div>
@@ -257,7 +302,7 @@
             </div>
 
             <!-- TIME SERIES CRÉATIONS -->
-            <div class="col-lg-6" id="widgetTime">
+            <div class="col-lg-6">
                 <div class="glass-card">
                     <h5 class="fw-bold mb-3">📈 Évolution Chronologique des Créations (1995-2026)</h5>
                     <div id="plotlyTimeSeries" style="height: 340px;"></div>
@@ -267,7 +312,7 @@
 
         <div class="row g-4 mb-4">
             <!-- BAR CHART ACTIVITÉS NAF -->
-            <div class="col-lg-6" id="widgetBar">
+            <div class="col-lg-6">
                 <div class="glass-card">
                     <h5 class="fw-bold mb-3">📊 Top Activités NAF les Plus Représentées</h5>
                     <div id="plotlyActivitiesBar" style="height: 340px;"></div>
@@ -295,10 +340,10 @@
         </div>
 
         <!-- TOP / FLOP COMMUNES & DÉPARTEMENTS -->
-        <div class="row g-4" id="widgetTables">
+        <div class="row g-4">
             <div class="col-lg-6">
                 <div class="glass-card">
-                    <h5 class="fw-bold mb-3" id="titleTopCommunes">🏆 Top & Flop des Communes</h5>
+                    <h5 class="fw-bold mb-3" id="titleTopCommunes">🏆 Top des Communes Filtrées</h5>
                     <div class="table-responsive">
                         <table class="table align-middle">
                             <thead>
@@ -338,9 +383,16 @@
     <script>
         let rawAnalyticsData = null;
 
-        async function loadAnalyticsDashboard() {
+        async function applyAnalyticsFilters() {
+            const dept = document.getElementById('filterDept').value;
+            const limit = document.getElementById('filterLimit').value;
+            const naf = document.getElementById('filterNaf').value;
+
+            document.getElementById('activeFilterBadge').innerText = (dept === 'ALL') ? 'Toute la France' : 'Département ' + dept;
+
             try {
-                const res = await fetch('/api/analytics');
+                const url = `/api/analytics?departement=${encodeURIComponent(dept)}&limit=${limit}&naf=${encodeURIComponent(naf)}`;
+                const res = await fetch(url);
                 rawAnalyticsData = await res.json();
 
                 document.getElementById('kpiCommunes').innerText = rawAnalyticsData.total_communes.toLocaleString();
@@ -352,6 +404,25 @@
             } catch (err) {
                 console.error(err);
             }
+        }
+
+        function resetAnalyticsFilters() {
+            document.getElementById('filterDept').value = 'ALL';
+            document.getElementById('filterNaf').value = 'ALL';
+            document.getElementById('filterLimit').value = '10';
+            document.getElementById('filterSearch').value = '';
+            applyAnalyticsFilters();
+        }
+
+        function filterLocalData() {
+            if (!rawAnalyticsData || !rawAnalyticsData.top_10_communes) return;
+            const search = document.getElementById('filterSearch').value.toLowerCase().trim();
+
+            const filtered = rawAnalyticsData.top_10_communes.filter(c => 
+                c.commune.toLowerCase().includes(search) || c.cp.includes(search)
+            );
+
+            renderCommunesTable(filtered);
         }
 
         function renderCharts() {
@@ -413,9 +484,9 @@
 
         function updateDashboardView() {
             if (!rawAnalyticsData) return;
-            const limit = parseInt(document.getElementById('selectLimit').value) || 10;
+            const limit = parseInt(document.getElementById('filterLimit').value) || 10;
 
-            document.getElementById('titleTopCommunes').innerText = `🏆 Top ${limit} & Flop ${limit} des Communes`;
+            document.getElementById('titleTopCommunes').innerText = `🏆 Top ${limit} des Communes`;
 
             // 4. Tableau Entreprises
             const tbodyEnt = document.getElementById('tableEntreprises');
@@ -431,18 +502,7 @@
             });
 
             // 5. Tableau Communes
-            const tbodyCom = document.getElementById('tableCommunes');
-            tbodyCom.innerHTML = '';
-            rawAnalyticsData.top_10_communes.slice(0, limit).forEach((c, idx) => {
-                tbodyCom.innerHTML += `
-                    <tr style="background:#0b0e1e !important;">
-                        <td><span class="badge badge-top">Top ${idx+1}</span></td>
-                        <td><strong style="color:#ffffff !important;">${c.commune}</strong> <small style="color:#cbd5e1 !important;">(${c.cp})</small></td>
-                        <td><span class="badge badge-cyan">Dept ${c.dept}</span></td>
-                        <td class="text-end fw-bold" style="color:#ffffff !important;">${c.count.toLocaleString()}</td>
-                    </tr>
-                `;
-            });
+            renderCommunesTable(rawAnalyticsData.top_10_communes.slice(0, limit));
 
             // 6. Tableau Départements
             const tbodyDept = document.getElementById('tableDepts');
@@ -458,30 +518,25 @@
             });
         }
 
-        // PERSONNALISATION : THÈMES DE COULEUR
-        function setTheme(theme) {
-            document.body.className = '';
-            if (theme !== 'purple') {
-                document.body.classList.add('theme-' + theme);
+        function renderCommunesTable(communes) {
+            const tbodyCom = document.getElementById('tableCommunes');
+            tbodyCom.innerHTML = '';
+            if (!communes || communes.length === 0) {
+                tbodyCom.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">Aucune commune ne correspond aux filtres.</td></tr>';
+                return;
             }
-            document.querySelectorAll('.customizer-bar .btn-custom').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+            communes.forEach((c, idx) => {
+                tbodyCom.innerHTML += `
+                    <tr style="background:#0b0e1e !important;">
+                        <td><span class="badge badge-top">Top ${idx+1}</span></td>
+                        <td><strong style="color:#ffffff !important;">${c.commune}</strong> <small style="color:#cbd5e1 !important;">(${c.cp})</small></td>
+                        <td><span class="badge badge-cyan">Dept ${c.dept}</span></td>
+                        <td class="text-end fw-bold" style="color:#ffffff !important;">${c.count.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
         }
 
-        // PERSONNALISATION : AFFICHER / MASQUER WIDGETS
-        function toggleWidget(widgetId, btnId) {
-            const el = document.getElementById(widgetId);
-            const btn = document.getElementById(btnId);
-            if (el.style.display === 'none') {
-                el.style.display = 'block';
-                btn.classList.add('active');
-            } else {
-                el.style.display = 'none';
-                btn.classList.remove('active');
-            }
-        }
-
-        // EXPORTATION JSON
         function exportDashboardJSON() {
             if (!rawAnalyticsData) return;
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(rawAnalyticsData, null, 2));
@@ -493,7 +548,7 @@
             downloadAnchor.remove();
         }
 
-        window.onload = loadAnalyticsDashboard;
+        window.onload = applyAnalyticsFilters;
     </script>
 </body>
 </html>
