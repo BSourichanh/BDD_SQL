@@ -44,7 +44,7 @@
 
         .wrapper {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1240px;
         }
 
         .hero {
@@ -101,84 +101,32 @@
 
         .glass-card {
             background: var(--card-bg);
-            backdrop-filter: blur(24px);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
-            border-radius: 28px;
+            border-radius: 24px;
             padding: 2.5rem;
-            box-shadow: 
-                0 30px 60px -15px rgba(0, 0, 0, 0.8),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--accent-cyan), var(--accent-pink));
-        }
-
-        .presets-bar {
-            display: flex;
-            gap: 0.75rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .preset-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-muted);
-            padding: 0.55rem 1.1rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .preset-btn:hover, .preset-btn.active {
-            background: rgba(139, 92, 246, 0.2);
-            border-color: var(--primary);
-            color: #fff;
-            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
-        }
-
-        .section-header {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #c4b5fd;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.7);
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 1.75rem;
+            margin-bottom: 2rem;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 0.6rem;
+            gap: 0.5rem;
         }
 
-        .form-group.full-span {
+        .form-group.full-width {
             grid-column: 1 / -1;
         }
 
         label {
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             font-weight: 600;
             color: var(--text-muted);
             display: flex;
@@ -186,138 +134,124 @@
             align-items: center;
         }
 
-        .tag-badge {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--accent-green);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            padding: 0.15rem 0.5rem;
-            border-radius: 6px;
-            font-size: 0.72rem;
-            font-weight: 700;
-        }
-
         .input-wrapper {
             position: relative;
-            display: flex;
-            align-items: center;
         }
 
         .input-icon {
             position: absolute;
             left: 1.1rem;
+            top: 50%;
+            transform: translateY(-50%);
             color: var(--text-dark);
             font-size: 1.1rem;
             pointer-events: none;
-            transition: color 0.2s ease;
-            z-index: 2;
         }
 
-        input, select {
+        input[type="text"], select {
             width: 100%;
             background: var(--input-bg);
             border: 1px solid var(--input-border);
-            border-radius: 14px;
-            padding: 0.9rem 1.1rem 0.9rem 2.8rem;
             color: var(--text-main);
-            font-size: 0.95rem;
+            padding: 0.9rem 1.1rem 0.9rem 3.2rem;
+            border-radius: 14px;
+            font-size: 0.98rem;
+            transition: all 0.25s ease;
             outline: none;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            appearance: none;
         }
 
         select {
             cursor: pointer;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a78bfa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 1.1rem center;
-            background-size: 1.1em;
-        }
-
-        option {
-            background: #0f172a;
-            color: #fff;
-            padding: 0.8rem;
+            background-position: right 1.2rem center;
+            background-size: 1.1rem;
         }
 
         input:focus, select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 4px var(--primary-glow);
-            background-color: rgba(15, 19, 38, 0.98);
-        }
-
-        input:focus + .input-icon, select:focus + .input-icon {
-            color: var(--primary);
+            background: rgba(15, 18, 35, 0.98);
         }
 
         .actions {
             display: flex;
             gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        button {
-            padding: 1rem 1.8rem;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 0.98rem;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.6rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
         }
 
         .btn-submit {
-            flex: 2;
-            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
-            color: #fff;
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            border: none;
+            padding: 1rem 2.2rem;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 25px -5px var(--primary-glow);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
         }
 
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.6);
+            box-shadow: 0 15px 30px -5px var(--primary-glow);
         }
 
         .btn-reset {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 1rem 1.8rem;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 0.98rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         .btn-reset:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .btn-export {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: var(--accent-green);
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-export:hover {
+            background: rgba(16, 185, 129, 0.3);
+            color: white;
         }
 
         .results-panel {
             margin-top: 2.5rem;
-            background: rgba(10, 13, 26, 0.95);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 2rem;
             display: none;
-            animation: fadeIn 0.4s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 1.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
             padding: 1.2rem;
             border-radius: 16px;
             text-align: center;
@@ -330,89 +264,183 @@
         }
 
         .stat-label {
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
-            margin-top: 0.3rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            margin-top: 0.2rem;
         }
 
         .sql-code-block {
-            background: #05070f;
-            border: 1px solid rgba(139, 92, 246, 0.25);
+            background: #04060c;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 14px;
-            padding: 1.2rem;
+            padding: 1rem 1.2rem;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             color: #38bdf8;
-            margin-bottom: 1.75rem;
-            white-space: pre-wrap;
-            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            word-break: break-all;
         }
 
         .table-responsive {
             overflow-x: auto;
-            border-radius: 14px;
+            border-radius: 16px;
             border: 1px solid var(--card-border);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
+            text-align: left;
+            font-size: 0.92rem;
         }
 
         th {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.04);
             color: var(--text-muted);
             font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.72rem;
-            letter-spacing: 0.05em;
-            padding: 1rem 1rem;
-            text-align: left;
+            padding: 1.1rem;
             border-bottom: 1px solid var(--card-border);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
         }
 
         td {
-            padding: 1rem 1rem;
+            padding: 1.1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            color: var(--text-main);
+            vertical-align: middle;
         }
 
-        tr:hover td {
-            background: rgba(139, 92, 246, 0.06);
+        tr { cursor: pointer; transition: background 0.2s ease; }
+        tr:hover { background: rgba(139, 92, 246, 0.08); }
+
+        .tag-badge {
+            background: rgba(139, 92, 246, 0.15);
+            color: #c4b5fd;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .status-pill {
             background: rgba(16, 185, 129, 0.15);
             color: var(--accent-green);
             border: 1px solid rgba(16, 185, 129, 0.3);
-            padding: 0.25rem 0.6rem;
+            padding: 0.25rem 0.7rem;
             border-radius: 9999px;
-            font-size: 0.72rem;
-            font-weight: 700;
-        }
-
-        .tag-cat {
-            background: rgba(56, 189, 248, 0.15);
-            color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            padding: 0.2rem 0.5rem;
-            border-radius: 6px;
-            font-size: 0.72rem;
+            font-size: 0.78rem;
             font-weight: 700;
         }
 
         .naf-badge {
-            background: rgba(139, 92, 246, 0.15);
-            color: #c4b5fd;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            padding: 0.2rem 0.6rem;
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            padding: 0.25rem 0.6rem;
             border-radius: 8px;
-            font-size: 0.75rem;
             font-family: 'JetBrains Mono', monospace;
-            display: inline-block;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .btn-detail {
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            color: #c4b5fd;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-detail:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* MODAL GLASSMORPHISM POUR DÉTAILS ÉTABLISSEMENT */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(3, 5, 12, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+
+        .modal-card {
+            background: rgba(18, 22, 41, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            max-width: 650px;
+            width: 100%;
+            padding: 2.2rem;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .modal-close {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+            font-weight: 700;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
         }
     </style>
 </head>
@@ -421,95 +449,64 @@
         <div class="hero">
             <div class="hero-badge">
                 <span class="pulse"></span>
-                <span>Base SQL SIRENE — Recherche par Liste & Domaine NAF</span>
+                <span>Base SIRENE INSEE (600,000+ Établissements Réels)</span>
             </div>
-            <h1>Plateforme de Recherche Entreprises</h1>
-            <p class="subtitle">Sélectionnez le Domaine d'Activité dans la liste déroulante ou filtrez par Dénomination, Dirigeant, Adresse et SIRET</p>
+            <h1>Formulaire de Recherche SQL SIRENE</h1>
+            <p class="subtitle">Interrogez l'intégralité de la base de données SQL avec filtres multi-critères et liste complète des domaines d'activité NAF sans aucune limitation.</p>
         </div>
 
         <div class="glass-card">
-            <!-- Fast Presets -->
-            <div class="presets-bar">
-                <button type="button" class="preset-btn" onclick="applyPreset('74', '')">📍 Haute-Savoie (74)</button>
-                <button type="button" class="preset-btn" onclick="applyPreset('', '10.71C')">🥖 Boulangeries (10.71C)</button>
-                <button type="button" class="preset-btn" onclick="applyPreset('', '62.01Z')">💻 Tech & Info (62.01Z)</button>
-                <button type="button" class="preset-btn" onclick="applyPreset('', '47.11D')">🛒 Supermarchés (47.11D)</button>
-                <button type="button" class="preset-btn" onclick="applyPreset('', '49.41Z')">🚚 Transports (49.41Z)</button>
-                <button type="button" class="preset-btn" onclick="applyPreset('', '56.10A')">🍽️ Restauration (56.10A)</button>
-            </div>
-
             <form id="searchForm" onsubmit="handleSearch(event)">
-                <div class="section-header">
-                    <span>🏷️ Nom & Identifiants Officiels</span>
-                </div>
                 <div class="form-grid">
-                    <div class="form-group full-span">
-                        <label for="nom">
-                            Dénomination / Nom de l'entreprise ou Dirigeant
-                            <span class="tag-badge">Index FULLTEXT</span>
-                        </label>
-                        <div class="input-wrapper">
-                            <span class="input-icon">🔍</span>
-                            <input type="text" id="nom" placeholder="Ex: Boulangerie, Savoie Logistique, Bernard SOURICHANH..." autofocus>
-                        </div>
-                    </div>
                     <div class="form-group">
-                        <label for="siren">
-                            Numéro SIREN (9 chiffres)
-                            <span class="tag-badge">Clé Primaire</span>
-                        </label>
+                        <label for="nom">Nom / Raison Sociale <span class="tag-badge">LIKE %nom%</span></label>
                         <div class="input-wrapper">
                             <span class="input-icon">🏢</span>
-                            <input type="text" id="siren" placeholder="Ex: 000325175" maxlength="9">
+                            <input type="text" id="nom" placeholder="Ex: Boulangerie, Carrefour, Tech...">
                         </div>
                     </div>
+
                     <div class="form-group">
-                        <label for="siret">
-                            Numéro SIRET (14 chiffres)
-                            <span class="tag-badge">Clé Unique</span>
-                        </label>
+                        <label for="siren">Numéro SIREN <span class="tag-badge">9 Chiffres</span></label>
                         <div class="input-wrapper">
                             <span class="input-icon">🔢</span>
-                            <input type="text" id="siret" placeholder="Ex: 00032517500024" maxlength="14">
+                            <input type="text" id="siren" placeholder="Ex: 042308221">
                         </div>
                     </div>
-                </div>
 
-                <div class="section-header" style="margin-top: 1rem;">
-                    <span>📍 Localisation & Domaine d'Activité NAF</span>
-                </div>
-                <div class="form-grid">
                     <div class="form-group">
-                        <label for="code_postal">
-                            Code Postal
-                            <span class="tag-badge">Index Composite</span>
-                        </label>
+                        <label for="siret">Numéro SIRET <span class="tag-badge">14 Chiffres</span></label>
                         <div class="input-wrapper">
-                            <span class="input-icon">📬</span>
-                            <input type="text" id="code_postal" placeholder="Ex: 74000, 84000..." maxlength="5">
+                            <span class="input-icon">🏷️</span>
+                            <input type="text" id="siret" placeholder="Ex: 04230822100011">
                         </div>
                     </div>
+
                     <div class="form-group">
-                        <label for="departement">
-                            Département
-                            <span class="tag-badge">Index Composite</span>
-                        </label>
+                        <label for="code_postal">Code Postal <span class="tag-badge">5 Chiffres</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">📍</span>
+                            <input type="text" id="code_postal" placeholder="Ex: 74220, 75008, 69002...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="departement">Département <span class="tag-badge">Index B-Tree (ex: 74)</span></label>
                         <div class="input-wrapper">
                             <span class="input-icon">🗺️</span>
-                            <input type="text" id="departement" placeholder="Ex: 74, 84, 13..." maxlength="3">
+                            <input type="text" id="departement" placeholder="Ex: 74, 75, 13, 69, 33...">
                         </div>
                     </div>
 
-                    <!-- LISTE DÉROULANTE VISIBLE HTML SELECT DES DOMAINES D'ACTIVITÉ NAF -->
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="code_activite">
-                            Domaine d'Activité NAF (Liste déroulante)
-                            <span class="tag-badge">Sélection NAF</span>
+                            Domaine d'Activité NAF (Sélection déroulante littérale)
+                            <span class="tag-badge">Nomenclature NAF</span>
                         </label>
                         <div class="input-wrapper">
                             <span class="input-icon">💼</span>
                             <select id="code_activite">
-                                <option value="">Tous les domaines d'activité</option>
+                                <option value="">Tous les domaines d'activité NAF</option>
                                 <option value="10.71C">10.71C — Boulangerie et boulangerie-pâtisserie</option>
                                 <option value="62.01Z">62.01Z — Programmation informatique & Web (Tech)</option>
                                 <option value="47.11D">47.11D — Supermarchés et hypermarchés</option>
@@ -539,6 +536,11 @@
             </form>
 
             <div id="resultsPanel" class="results-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
+                    <h3 style="font-weight: 800; font-size: 1.3rem;">Résultats de la Base SQL SIRENE</h3>
+                    <button type="button" class="btn-export" onclick="exportResultsCSV()">📥 Exporter en CSV</button>
+                </div>
+
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-number" id="timeSql">0.000 ms</div>
@@ -549,7 +551,7 @@
                         <div class="stat-label">Établissements Réels Trouvés</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number" style="color: #c4b5fd;" id="sourceLabel">Base B-Tree</div>
+                        <div class="stat-number" style="color: #c4b5fd;" id="sourceLabel">Base SQL Index B-Tree</div>
                         <div class="stat-label">Moteur de Données</div>
                     </div>
                 </div>
@@ -563,37 +565,109 @@
                                 <th>SIRET / SIREN</th>
                                 <th>Dénomination & Dirigeant</th>
                                 <th>Localisation (CP & Ville)</th>
-                                <th>Domaine d'Activité (Code & Libellé NAF)</th>
+                                <th>Domaine NAF</th>
                                 <th>Catégorie & Effectifs</th>
                                 <th>Création</th>
-                                <th>Statut</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="resultsTableBody">
-                        </tbody>
+                        <tbody id="resultsTableBody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL GLASSMORPHISM DÉTAILS COMPLETS DE L'ÉTABLISSEMENT -->
+    <div id="detailModal" class="modal-overlay" onclick="closeDetailModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div>
+                    <span id="modalStatusPill" class="status-pill" style="margin-bottom:0.5rem; display:inline-block;">ACTIF</span>
+                    <h2 id="modalDenomination" class="modal-title">Dénomination</h2>
+                </div>
+                <button class="modal-close" onclick="closeDetailModal()">✕</button>
+            </div>
+            
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Numéro SIRET (14 chiffres)</div>
+                    <div id="modalSiret" class="detail-value" style="font-family:'JetBrains Mono',monospace; color:#a78bfa;">-</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Numéro SIREN (9 chiffres)</div>
+                    <div id="modalSiren" class="detail-value" style="font-family:'JetBrains Mono',monospace; color:#38bdf8;">-</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Localisation & Commune</div>
+                    <div id="modalCommune" class="detail-value">-</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Département</div>
+                    <div id="modalDept" class="detail-value">-</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Domaine NAF (Secteur)</div>
+                    <div id="modalNaf" class="detail-value" style="color:var(--accent-cyan);">-</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Tranche d'Effectifs INSEE</div>
+                    <div id="modalEffectifs" class="detail-value" style="color:var(--accent-green);">-</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Catégorie d'Entreprise</div>
+                    <div id="modalCat" class="detail-value">-</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Date de Création Légale</div>
+                    <div id="modalDateCrea" class="detail-value" style="color:var(--text-muted);">-</div>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">
+                <button type="button" class="btn-reset" onclick="copySiret()">📋 Copier le SIRET</button>
+                <button type="button" class="btn-submit" onclick="closeDetailModal()">OK / Fermer</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let currentSearchData = [];
+
         const nafDictionary = {
-            "10.71C": "Boulangerie et pâtisserie",
-            "62.01Z": "Programmation informatique (Tech)",
-            "47.11D": "Supermarchés & Grande distribution",
-            "47.11C": "Supérettes & Alimentation",
-            "49.41Z": "Transports de fret & Logistique",
-            "56.10A": "Restauration traditionnelle",
-            "68.20B": "Location immobilière",
-            "43.22A": "Plomberie & Chauffage",
-            "45.20A": "Garage & Réparation auto",
-            "70.22Z": "Conseil en gestion & affaires",
-            "86.21Z": "Médecine générale",
-            "85.59A": "Formation professionnelle",
-            "81.10Z": "Services aux bâtiments & Syndic",
-            "32.12Z": "Joaillerie, Bijouterie & Perles",
-            "47.89Z": "Commerce sur marchés & éventaires"
+            "10.71C": "Boulangerie et boulangerie-pâtisserie",
+            "62.01Z": "Programmation informatique & Web (Tech)",
+            "47.11D": "Supermarchés et hypermarchés",
+            "47.11C": "Supérettes et commerces d'alimentation",
+            "49.41Z": "Transports routiers de fret & Logistique",
+            "56.10A": "Restauration traditionnelle et gastronomie",
+            "68.20B": "Location de logements et immobilier",
+            "43.22A": "Plomberie, Chauffage & Installation sanitaire",
+            "45.20A": "Garage automobile & Réparation de véhicules",
+            "70.22Z": "Conseil pour les affaires et gestion d'entreprises",
+            "86.21Z": "Santé & Médecine générale",
+            "85.59A": "Formation continue d'adultes et enseignement",
+            "81.10Z": "Services combinés aux bâtiments & Syndic",
+            "32.12Z": "Joaillerie, bijouterie & Travail des perles",
+            "47.89Z": "Commerce de détail sur marchés et éventaires"
+        };
+
+        const effectifsDict = {
+            "NN": "Sans salarié / Non renseigné",
+            "00": "0 salarié",
+            "01": "1 à 2 salariés",
+            "02": "3 à 5 salariés",
+            "03": "6 à 9 salariés",
+            "11": "10 à 19 salariés",
+            "12": "20 à 49 salariés",
+            "21": "50 à 99 salariés",
+            "22": "100 à 199 salariés",
+            "31": "200 à 249 salariés",
+            "32": "250 à 499 salariés",
+            "41": "500 à 999 salariés",
+            "51": "1 000 à 1 999 salariés",
+            "52": "2 000 à 4 999 salariés",
+            "53": "5 000 salariés et plus"
         };
 
         async function handleSearch(e) {
@@ -621,9 +695,11 @@
                 });
 
                 const data = await res.json();
+                currentSearchData = data.results || [];
+
                 document.getElementById('timeSql').innerText = data.execution_time_ms + ' ms';
                 document.getElementById('countRes').innerText = data.count;
-                document.getElementById('sourceLabel').innerText = data.source || 'Base SQL';
+                document.getElementById('sourceLabel').innerText = data.source || 'Base SQL Index B-Tree';
                 document.getElementById('sqlQueryDisplay').innerText = data.sql_query || 'SELECT * FROM etablissements;';
 
                 const tbody = document.getElementById('resultsTableBody');
@@ -632,17 +708,19 @@
                 if (!data.results || data.results.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:2rem;">Aucun établissement ne correspond aux critères SQL dans la base.</td></tr>';
                 } else {
-                    data.results.forEach(r => {
+                    data.results.forEach((r, idx) => {
                         const nafLibelle = nafDictionary[r.code_activite] || "Activité INSEE NAF";
+                        const effLibelle = effectifsDict[r.effectifs] || (r.effectifs + " salariés");
+
                         tbody.innerHTML += `
-                            <tr>
+                            <tr onclick="openDetailModal(${idx})">
                                 <td>
                                     <strong style="font-family:'JetBrains Mono',monospace; color:#a78bfa;">${r.siret}</strong><br>
                                     <small style="color:var(--text-muted); font-family:'JetBrains Mono',monospace;">SIREN: ${r.siren}</small>
                                 </td>
                                 <td>
                                     <strong style="font-size:0.95rem; color:#fff;">${r.denomination}</strong><br>
-                                    <small style="color:var(--text-muted);">👤 ${r.dirigeant}</small>
+                                    <small style="color:var(--text-muted);">👤 Dirigeant: ${r.dirigeant}</small>
                                 </td>
                                 <td>${r.commune}<br><small style="color:var(--text-muted);">(${r.code_postal}) — Dept ${r.departement}</small></td>
                                 <td>
@@ -650,11 +728,11 @@
                                     <small style="color:#c4b5fd; font-weight:600;">${nafLibelle}</small>
                                 </td>
                                 <td>
-                                    <span class="tag-cat">${r.categorie}</span><br>
-                                    <small style="color:var(--text-muted);">👥 ${r.effectifs} sal.</small>
+                                    <span class="tag-badge">${r.categorie}</span><br>
+                                    <small style="color:var(--text-muted);">${effLibelle}</small>
                                 </td>
                                 <td><small style="color:var(--text-muted);">${r.date_creation}</small></td>
-                                <td><span class="status-pill">${r.est_actif}</span></td>
+                                <td><button type="button" class="btn-detail">🔎 Fiche Détaillée</button></td>
                             </tr>
                         `;
                     });
@@ -666,11 +744,59 @@
             }
         }
 
-        function applyPreset(dept, act) {
-            resetForm();
-            if (dept) document.getElementById('departement').value = dept;
-            if (act) document.getElementById('code_activite').value = act;
-            document.getElementById('searchForm').requestSubmit();
+        let currentModalSiret = '';
+
+        function openDetailModal(idx) {
+            const r = currentSearchData[idx];
+            if (!r) return;
+
+            currentModalSiret = r.siret;
+            document.getElementById('modalDenomination').innerText = r.denomination;
+            document.getElementById('modalSiret').innerText = r.siret;
+            document.getElementById('modalSiren').innerText = r.siren;
+            document.getElementById('modalCommune').innerText = `${r.commune} (${r.code_postal})`;
+            document.getElementById('modalDept').innerText = `Département ${r.departement}`;
+            
+            const nafLibelle = nafDictionary[r.code_activite] || "Domaine NAF Répertorié INSEE";
+            document.getElementById('modalNaf').innerText = `${r.code_activite} — ${nafLibelle}`;
+            
+            const effLibelle = effectifsDict[r.effectifs] || `${r.effectifs} salariés`;
+            document.getElementById('modalEffectifs').innerText = effLibelle;
+            document.getElementById('modalCat').innerText = r.categorie || "PME / TPE";
+            document.getElementById('modalDateCrea').innerText = r.date_creation || "Date non renseignée";
+
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeDetailModal(e) {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        function copySiret() {
+            if (currentModalSiret) {
+                navigator.clipboard.writeText(currentModalSiret);
+                alert(`SIRET ${currentModalSiret} copié dans le presse-papier !`);
+            }
+        }
+
+        function exportResultsCSV() {
+            if (!currentSearchData || currentSearchData.length === 0) {
+                alert("Aucun résultat à exporter.");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,SIRET,SIREN,Denomination,CodePostal,Commune,Departement,CodeActivite,Effectifs,DateCreation\n";
+            currentSearchData.forEach(r => {
+                csvContent += `"${r.siret}","${r.siren}","${r.denomination.replace(/"/g, '""')}","${r.code_postal}","${r.commune}","${r.departement}","${r.code_activite}","${r.effectifs}","${r.date_creation}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "sirene_export_resultats.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function resetForm() {

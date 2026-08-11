@@ -13,9 +13,10 @@ import socketserver
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-CSV_DIR = os.path.join(PROJECT_ROOT, '05_Donnees_CSV')
+CSV_DIR = os.path.join(PROJECT_ROOT, '06_Donnees_CSV')
 if not os.path.exists(CSV_DIR):
-    CSV_DIR = os.path.join(PROJECT_ROOT, '04_Donnees_CSV')
+    CSV_DIR = os.path.join(PROJECT_ROOT, '05_Donnees_CSV')
+
 
 FILE_UL = os.path.join(CSV_DIR, 'StockUniteLegale_utf8.csv')
 FILE_ETAB = os.path.join(CSV_DIR, 'StockEtablissement_utf8.csv')
