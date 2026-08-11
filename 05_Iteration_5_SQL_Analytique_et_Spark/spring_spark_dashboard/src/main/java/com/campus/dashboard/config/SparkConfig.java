@@ -6,7 +6,7 @@ import org.apache.spark.sql.SparkSession;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 import java.io.File;
 
 @Configuration
@@ -21,27 +21,39 @@ public class SparkConfig {
         System.out.println(" 🚀 INITIALISATION DE LA SPARK SESSION IN-MEMORY (SPRING BOOT)");
         System.out.println("==========================================================");
 
-        this.sparkSession = SparkSession.builder()
-                .appName("SpringSparkAnalyticsDashboard")
-                .master("local[*]")
-                .config("spark.sql.shuffle.partitions", "4")
-                .getOrCreate();
+        try {
+            this.sparkSession = SparkSession.builder()
+                    .appName("SpringSparkAnalyticsDashboard")
+                    .master("local[*]")
+                    .config("spark.sql.shuffle.partitions", "4")
+                    .getOrCreate();
 
-        String parquetPath = "../sirene_analytique_commune.csv";
-        File f = new File(parquetPath);
-        if (!f.exists()) {
-            parquetPath = "05_Iteration_5_SQL_Analytique_et_Spark/sirene_analytique_commune.csv";
+            String parquetPath = "../sirene_analytique_commune.csv";
+            File f = new File(parquetPath);
+            if (!f.exists()) {
+                parquetPath = "05_Iteration_5_SQL_Analytique_et_Spark/sirene_analytique_commune.csv";
+            }
+            File f2 = new File(parquetPath);
+            if (!f2.exists()) {
+                parquetPath = "/home/wwwroot/05_Iteration_5_SQL_Analytique_et_Spark/sirene_analytique_commune.csv";
+            }
+
+            System.out.println(" 📖 Chargement In-Memory du Dataset Parquet/CSV : " + parquetPath);
+            if (new File(parquetPath).exists()) {
+                this.sireneParquetDataset = this.sparkSession.read()
+                        .option("header", "true")
+                        .option("inferSchema", "true")
+                        .csv(parquetPath)
+                        .cache();
+
+                this.sireneParquetDataset.createOrReplaceTempView("sirene_communes");
+                System.out.println(" ✅ DATASET SPARK EN MÉMOIRE RAM PRÊT : " + this.sireneParquetDataset.count() + " LIGNES !");
+            } else {
+                System.out.println(" ⚠️ Fichier analytique non trouvé au chemin : " + parquetPath);
+            }
+        } catch (Exception e) {
+            System.err.println(" ⚠️ Erreur lors du chargement Spark : " + e.getMessage());
         }
-
-        System.out.println(" 📖 Chargement In-Memory du Dataset Parquet/CSV : " + parquetPath);
-        this.sireneParquetDataset = this.sparkSession.read()
-                .option("header", "true")
-                .option("inferSchema", "true")
-                .csv(parquetPath)
-                .cache();
-
-        this.sireneParquetDataset.createOrReplaceTempView("sirene_communes");
-        System.out.println(" ✅ DATASET SPARK EN MÉMOIRE RAM PRETS POUR LES REQUÊTES EN " + this.sireneParquetDataset.count() + " LIGNES !");
         System.out.println("==========================================================");
     }
 
