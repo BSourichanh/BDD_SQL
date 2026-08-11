@@ -68,47 +68,58 @@
             letter-spacing: 0.05em;
         }
 
-        table {
-            color: var(--text-main);
-            font-size: 0.88rem;
+        /* OVERRIDE BOOTSTRAP 5 TABLE BACKGROUND & TEXT COLOR */
+        .table, 
+        .table > :not(caption) > * > *,
+        .table > tbody > tr > td,
+        .table > tbody > tr > th,
+        .table > thead > tr > th {
+            background-color: #0b0e1e !important;
+            --bs-table-bg: #0b0e1e !important;
+            --bs-table-color: #ffffff !important;
+            color: #ffffff !important;
+            border-bottom-color: rgba(255, 255, 255, 0.08) !important;
         }
 
-        thead th {
-            background: rgba(255, 255, 255, 0.04) !important;
-            color: var(--text-muted) !important;
-            text-transform: uppercase;
-            font-size: 0.72rem;
-            border-bottom: 1px solid var(--card-border) !important;
-        }
-
-        tbody td {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-            vertical-align: middle;
+        .table strong, 
+        .table td, 
+        .table th, 
+        .table div,
+        tbody tr td,
+        tbody tr td strong {
             color: #ffffff !important;
         }
 
-        tbody td strong {
-            color: #ffffff !important;
+        .table small, .text-muted {
+            color: #cbd5e1 !important;
         }
-
-        tbody td small {
-            color: #94a3b8 !important;
-        }
-
 
         .badge-cyan {
-            background: rgba(6, 182, 212, 0.15);
-            color: var(--accent-cyan);
-            border: 1px solid rgba(6, 182, 212, 0.3);
+            background: #0891b2 !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(6, 182, 212, 0.5) !important;
             font-family: 'JetBrains Mono', monospace;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
         }
 
         .badge-purple {
-            background: rgba(139, 92, 246, 0.15);
-            color: #c4b5fd;
-            border: 1px solid rgba(139, 92, 246, 0.3);
+            background: #7c3aed !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(139, 92, 246, 0.5) !important;
             font-family: 'JetBrains Mono', monospace;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
         }
+
+        .badge-top {
+            background: #059669 !important;
+            color: #ffffff !important;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
 
         .js-plotly-plot .plotly .main-svg {
             background: transparent !important;
@@ -310,10 +321,10 @@
                 tbodyEnt.innerHTML = '';
                 data.top_10_entreprises.forEach(e => {
                     tbodyEnt.innerHTML += `
-                        <tr>
+                        <tr style="background:#0b0e1e !important;">
                             <td><span class="badge badge-purple">${e.siren}</span></td>
-                            <td><strong style="color:#fff;">${e.nom}</strong></td>
-                            <td class="text-end fw-bold text-success">${e.count.toLocaleString()}</td>
+                            <td><strong style="color:#ffffff !important;">${e.nom}</strong></td>
+                            <td class="text-end fw-bold" style="color:#10b981 !important;">${e.count.toLocaleString()}</td>
                         </tr>
                     `;
                 });
@@ -323,11 +334,11 @@
                 tbodyCom.innerHTML = '';
                 data.top_10_communes.forEach((c, idx) => {
                     tbodyCom.innerHTML += `
-                        <tr>
-                            <td><span class="badge bg-success bg-opacity-20 text-success">Top ${idx+1}</span></td>
-                            <td><strong>${c.commune}</strong> <small class="text-muted">(${c.cp})</small></td>
+                        <tr style="background:#0b0e1e !important;">
+                            <td><span class="badge badge-top">Top ${idx+1}</span></td>
+                            <td><strong style="color:#ffffff !important;">${c.commune}</strong> <small style="color:#cbd5e1 !important;">(${c.cp})</small></td>
                             <td><span class="badge badge-cyan">Dept ${c.dept}</span></td>
-                            <td class="text-end fw-bold">${c.count.toLocaleString()}</td>
+                            <td class="text-end fw-bold" style="color:#ffffff !important;">${c.count.toLocaleString()}</td>
                         </tr>
                     `;
                 });
@@ -337,13 +348,14 @@
                 tbodyDept.innerHTML = '';
                 data.top_10_depts.forEach(d => {
                     tbodyDept.innerHTML += `
-                        <tr>
+                        <tr style="background:#0b0e1e !important;">
                             <td><span class="badge badge-cyan">Département ${d.dept}</span></td>
-                            <td class="fw-bold">${d.count.toLocaleString()}</td>
-                            <td class="text-muted">${d.sieges.toLocaleString()} sièges</td>
+                            <td class="fw-bold" style="color:#ffffff !important;">${d.count.toLocaleString()}</td>
+                            <td style="color:#cbd5e1 !important;">${d.sieges.toLocaleString()} sièges</td>
                         </tr>
                     `;
                 });
+
 
             } catch (err) {
                 console.error(err);

@@ -732,28 +732,29 @@
                         const effLibelle = effectifsDict[r.effectifs] || (r.effectifs + " salariés");
 
                         tbody.innerHTML += `
-                            <tr onclick="openDetailModal(${idx})">
+                            <tr onclick="openDetailModal(${idx})" style="background:#0b0e1e !important;">
                                 <td>
-                                    <strong style="font-family:'JetBrains Mono',monospace; color:#a78bfa;">${r.siret}</strong><br>
-                                    <small style="color:var(--text-muted); font-family:'JetBrains Mono',monospace;">SIREN: ${r.siren}</small>
+                                    <strong style="font-family:'JetBrains Mono',monospace; color:#a78bfa !important;">${r.siret}</strong><br>
+                                    <small style="color:#cbd5e1 !important; font-family:'JetBrains Mono',monospace;">SIREN: ${r.siren}</small>
                                 </td>
                                 <td>
-                                    <strong style="font-size:0.95rem; color:#fff;">${r.denomination}</strong><br>
-                                    <small style="color:var(--text-muted);">👤 Dirigeant: ${r.dirigeant}</small>
+                                    <strong style="font-size:0.95rem; color:#ffffff !important;">${r.denomination}</strong><br>
+                                    <small style="color:#cbd5e1 !important;">👤 Dirigeant: ${r.dirigeant}</small>
                                 </td>
-                                <td>${r.commune}<br><small style="color:var(--text-muted);">(${r.code_postal}) — Dept ${r.departement}</small></td>
+                                <td style="color:#ffffff !important;">${r.commune}<br><small style="color:#cbd5e1 !important;">(${r.code_postal}) — Dept ${r.departement}</small></td>
                                 <td>
                                     <span class="naf-badge">${r.code_activite}</span><br>
-                                    <small style="color:#c4b5fd; font-weight:600;">${nafLibelle}</small>
+                                    <small style="color:#c4b5fd !important; font-weight:600;">${nafLibelle}</small>
                                 </td>
                                 <td>
                                     <span class="tag-badge">${r.categorie}</span><br>
-                                    <small style="color:var(--text-muted);">${effLibelle}</small>
+                                    <small style="color:#cbd5e1 !important;">${effLibelle}</small>
                                 </td>
-                                <td><small style="color:var(--text-muted);">${r.date_creation}</small></td>
+                                <td><small style="color:#cbd5e1 !important;">${r.date_creation}</small></td>
                                 <td><button type="button" class="btn-detail">🔎 Fiche Détaillée</button></td>
                             </tr>
                         `;
+
                     });
                 }
 
