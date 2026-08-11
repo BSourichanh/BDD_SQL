@@ -150,7 +150,7 @@
 
         input[type="text"], select {
             width: 100%;
-            background: var(--input-bg);
+            background: #0a0d1a !important;
             border: 1px solid var(--input-border);
             color: #ffffff !important;
             padding: 0.9rem 1.1rem 0.9rem 3.2rem;
@@ -160,10 +160,17 @@
             outline: none;
         }
 
-        option {
+        select option {
             background-color: #0c0f24 !important;
-            color: #f8fafc !important;
-            padding: 0.5rem;
+            color: #ffffff !important;
+            padding: 0.8rem !important;
+        }
+
+        select option:hover,
+        select option:focus,
+        select option:checked {
+            background-color: #7c3aed !important;
+            color: #ffffff !important;
         }
 
         input:-webkit-autofill,
@@ -172,15 +179,17 @@
         select:-webkit-autofill {
             -webkit-text-fill-color: #ffffff !important;
             -webkit-box-shadow: 0 0 0px 1000px #0a0d1a inset !important;
+            box-shadow: 0 0 0px 1000px #0a0d1a inset !important;
             transition: background-color 5000s ease-in-out 0s;
         }
 
         input:focus, select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 4px var(--primary-glow);
-            background: rgba(15, 18, 35, 0.98);
+            background: #0a0d1a !important;
             color: #ffffff !important;
         }
+
 
 
         .actions {
