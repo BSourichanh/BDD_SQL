@@ -1,170 +1,80 @@
-# 📦 Projet BDD SQL — Guide d'Exécution & Étapes du Projet
+# 📦 Projet BDD SQL — Guide Obsidian & Synthèse des 5 Itérations
 
 > [!INFO] **Contexte du Projet**
-> **Sujet** : Plateforme de gestion de livraison de colis via des points relais à domicile (particuliers), en collaboration avec des transporteurs partenaires et à destination des clients finaux.
-> **Objectif principal** : Concevoir, structurer, implémenter et sécuriser une base de données relationnelle répondant aux exigences du cahier des charges.
+> **Module** : BDD SQL DEVAA 2028 (Jour 1, 2, 3, 4 et 5)
+> **Sujet** : Conception BDD, Sécurisation, NoSQL, Passage à l'Échelle SIRENE (600k+ établissements) et SQL Analytique (OLAP / Apache Spark).
 
 ---
 
-## 🎯 Vue d'ensemble du Cahier des Charges & Use Cases
+## 🗂️ Vue d'ensemble des 5 Itérations du Vault
 
-### 👥 Acteurs du Système
-1. **Particuliers (Points Relais)** : Inscription, profil (identité, adresse, contact, logement, disponibilités). Statut actif/inactif selon leur éligibilité vis-à-vis des transporteurs.
-2. **Transporteurs Partenaires** : S'appuient sur les points relais pour effectuer la livraison du dernier kilomètre via des **missions** définies dans le temps.
-3. **Clients Destinataires** : Destinataires des colis qui viennent les récupérer au point relais.
-4. **Administrateurs (Interface Interne)** : Suivi et gestion globale des points relais, transporteurs, missions et état des colis.
-
-### 🔄 Cycle de vie d'un Colis
 ```mermaid
-stateDiagram-v2
-    [*] --> EnCoursLivraison : Prise en charge par le Transporteur
-    EnCoursLivraison --> AuPointRelais : Remis au Point Relais
-    AuPointRelais --> Retire : Récupéré par le Client (≤ 14j)
-    AuPointRelais --> NonReclame : Non réclamé après 14 jours
-    NonReclame --> EnRetourTransporteur : En attente de retour
-    EnRetourTransporteur --> Termine : Récupéré par le Transporteur
-    Retire --> [*]
-    Termine --> [*]
+graph TD
+    IT1["1. Conception & DDL/DML"] --> IT2["2. Sécurisation & Privilèges"]
+    IT2 --> IT3["3. NoSQL (MongoDB, Neo4j)"]
+    IT3 --> IT4["4. Passage à l'Échelle SIRENE"]
+    IT4 --> IT5["5. SQL Analytique & Apache Spark"]
 ```
 
 ---
 
 ## 🛠️ ITÉRATION 1 : Conception & Création de la Base de Données
 
-### 📍 Étape 1.1 | Analyse du Cahier des Charges & Scénarios (~1h)
-- [ ] Lire et analyser en binôme l'ensemble du cahier des charges.
-- [ ] Identifier les données indispensables à garder en mémoire.
-- [ ] Lister les scénarios / cas d'utilisation (*use cases*) que les utilisateurs et employés devront réaliser (ex: arrivée d'un colis, retrait client, retour transporteur, affectation d'une mission).
-- [ ] Initialiser le document **Dossier de Conception**.
+### 📍 Documents & Scripts
+- 📄 `01_conventions_nommage.md` — Règle de nommage `snake_case`, PK/FK.
+- 📋 `02_dictionnaire_donnees.md` — Dictionnaire exhaustif des entités et contraintes.
+- 📐 `03_mcd_mld.md` — Schémas Merise MCD et MLD.
+- 🗄️ `04_schema_creation.sql` — Script DDL de création (6 tables).
+- 📥 `05_insertion_donnees.sql` — Script DML d'insertion des jeux de test.
+- 🧪 `test_bdd.py` — Valideur automatisé de cohérence des clés primaires/étrangères.
 
 ---
 
-### 📍 Étape 1.2 | Préparation & Conventions de Nommage (~0.5h)
-> [!TIP] **Fixer les règles avant la conception**
-- [ ] Échanger et convenir des règles et conventions de nommage :
-  - **Nom des tables** : `snake_case` au pluriel (ex: `points_relais`, `transporteurs`, `colis`).
-  - **Nom des données / colonnes** : `snake_case` au singulier (ex: `code_postal`, `date_livraison`).
-  - **Clés primaires** : `id_<table_singulier>` (ex: `id_colis`, `id_point_relais`).
-  - **Clés étrangères** : `id_<table_cible_singulier>` (ex: `id_transporteur`).
-  - **Types de données** : Notation standardisée (`VARCHAR`, `INT`, `DATETIME`, etc.).
-- [ ] Choisir l'outil de modélisation (ex: **AnalyseSI**, **Looping**, **MCD2SQL**, etc.).
-- [ ] Rédiger et ajouter ces conventions dans le **Dossier de Conception**.
+## 🔐 ITÉRATION 2 : Sécurisation & Privilèges SQL
+
+### 📍 Documents & Scripts
+- 📜 `06_memo_securite_sql.md` — Guide d'analyse des failles SQL Injection.
+- 🛡️ `07_patch_securite.sql` — Script d'attribution des privilèges MySQL (`GRANT`, `REVOKE`).
+- 🔒 `VULNERABILITES_ET_SECURITE_SQL.md` — Mémo sur les requêtes préparées (`PreparedStatement`) et le hachage BCrypt.
 
 ---
 
-### 📍 Étape 1.3 | Dictionnaire de Données (~1h)
-- [ ] Créer le tableau du dictionnaire de données dans le dossier de conception (doit contenir à minima : Code mnémonique, Désignation, Type, Taille) :
-  | Code Mnémonique | Désignation | Type SQL / Logique | Taille | Contraintes & Remarques |
-  | :--- | :--- | :--- | :--- | :--- |
-  | `id_particulier` | Identifiant unique du particulier | INT / AUTO_INCREMENT | - | Clé Primaire |
-  | `nom_particulier` | Nom de famille du particulier | VARCHAR | 50 | NOT NULL |
-  | `prenom_particulier` | Prénom du particulier | VARCHAR | 50 | NOT NULL |
-  | `adresse_particulier`| Adresse du logement | VARCHAR | 255 | NOT NULL |
-  | `code_postal` | Code postal | VARCHAR | 10 | NOT NULL |
-  | `ville` | Ville de résidence | VARCHAR | 100 | NOT NULL |
-  | `statut_eligibilite`| Statut d'activation du point relais | VARCHAR / ENUM | 20 | ex: ACTIF, INACTIF |
-  | `code_suivi_colis` | Numéro de suivi unique du colis | VARCHAR | 50 | UNIQUE, NOT NULL |
-  | `statut_colis` | État actuel du colis | VARCHAR / ENUM | 30 | EN_COURS, AU_RELAIS, RETIRE, NON_RECLAME, RETOURNE |
-  | `date_changement_statut` | Date du changement d'état | DATETIME | - | NOT NULL |
-  | `id_transporteur` | Identifiant du transporteur | INT | - | Clé Étrangère |
-  | ... | *(Compléter de manière exhaustive avec toutes les données)* | ... | ... | ... |
+## 🍃 ITÉRATION 3 : Introduction au NoSQL
+
+### 📍 Documents & Scripts
+- 📊 `01_memo_cap_theorem.md` — Théorème CAP (Consistency, Availability, Partition Tolerance).
+- 🍃 `02_mongodb_requetes.js` — Requêtes d'agrégation et filtres MongoDB (Collection `mflix/movies`).
+- 🕸️ `03_neo4j_cypher.cypher` — Requêtes en graphe Cypher Neo4j (Nœuds & Relations).
+- 🎮 `04_quiz_game_java_nosql.md` — Application Java Quiz Terminal interactive.
 
 ---
 
-### 📍 Étape 1.4 | Modèle Conceptuel de Données - MCD (~7.5h)
-- [ ] Regrouper les données du dictionnaire par **Entités** (Rectangles avec identifiant unique en premier).
-- [ ] Relier les entités par des **Associations** en respectant la méthode Merise.
-- [ ] Définir précisément les **Cardinalités** :
-  - `0,1` : Lié à au plus une entité.
-  - `1,1` : Lié à une et une seule entité.
-  - `0,N` : Lié à zéro ou plusieurs entités.
-  - `1,N` : Lié à au moins une entité.
-- [ ] Principales associations à modéliser :
-  - **Particulier <-> Mission <-> Transporteur** (période donnée).
-  - **Colis <-> Transporteur / Point Relais / Client Final**.
-  - **Colis <-> Historique des États** (traçabilité avec dates et intervenants).
-- [ ] Vérifier que chaque donnée du dictionnaire est positionnée dans le MCD.
-- [ ] Ajouter le schéma MCD complet au **Dossier de Conception**.
+## ⚡ ITÉRATION 4 : SQL & Passage à l'Échelle (Base SIRENE 600k+)
+
+### 📍 Documents & Scripts
+- ⚡ `01_memo_index_et_types.md` — Analyse d'exécution `EXPLAIN ANALYZE` et index B-Tree.
+- 🔍 `02_exercice1_indexes_sirene.sql` & `04_exercice3_nettoyage_indexes.sql` — Optimisation des index B-Tree.
+- 🏢 `03_exercice2_entreprises_74.sql` — Extraction des établissements de Haute-Savoie (74).
+- ⚙️ `05_exercice4_optimisation_types.sql` — Optimisation de la mémoire (`VARCHAR` -> `CHAR`, `INT`, `ENUM`).
+- 🌐 `formulaire_recherche_sirene/` — Formulaire Web Glassmorphism & API SQL Python sans limitation 50 (`app.py`, `index.html`).
 
 ---
 
-### 📍 Étape 1.5 | Modèle Logique de Données - MLD (~1h)
-- [ ] Transformer les associations du MCD en tables et clés étrangères (MLD) :
-  1. **Relation `(0,1/1,1)` <-> `(0,N/1,N)`** : La clé primaire du côté `N` est ajoutée comme **Clé Étrangère (FK)** dans la table du côté `1`.
-  2. **Relation `(0,N/1,N)` <-> `(0,N/1,N)`** : Création d'une **Table d'Association** spécifique contenant les clés primaires des deux tables comme clés étrangères.
-- [ ] Remplacer les associations par les flèches reliant clés étrangères (FK) vers clés primaires (PK).
-- [ ] Vérifier le respect rigoureux des conventions de nommage.
-- [ ] Intégrer le schéma MLD au **Dossier de Conception**.
+## 🚀 ITÉRATION 5 : SQL Analytique, Apache Spark & Parquet
+
+### 📍 Documents & Scripts
+- 📘 `01_memo_oltp_vs_olap_spark.md` — Mémo théorique comparant OLTP (Transactionnel) vs OLAP (Analytique), MapReduce et Apache Spark.
+- 📂 `SOURICHANH-Bernard-Campus-Atelier2-BaseReduite.py` — Script Exercice 1 générant la base analytique réduite par commune (`716 Ko` au lieu de 10 Go).
+- 📜 `SOURICHANH-Bernard-Campus-Atelier2-ComptagesAnalytiques.sql` — Requêtes SQL d'agrégation Exercices 2, 3 et 5 (Comptage par commune, département, Top 10 et Flop 10).
+- 📝 `SOURICHANH-Bernard-Campus-Atelier2-ExplicationPerformance.md` — Livrable Exercice 4 comparant MySQL vs Apache Spark In-Memory.
+- 🌐 `SOURICHANH-Bernard-Campus-Atelier2-DashboardSpark.py` & `static/index.html` — Application Web Decisionnelle Exercice 6 avec Carte de chaleur Plotly.js sur **`http://localhost:8090`**.
 
 ---
 
-### 📍 Étape 1.6 | Scripts SQL de Création & Remplissage (~3h)
+## 📋 Checklist Globale des Livrables du Vault
 
-#### 1. Rangement par Niveau de Dépendance
-- [ ] Déterminer l'ordre d'exécution de création des tables :
-  - **Niveau 0** : Aucune clé étrangère (ex: `transporteurs`, `clients`, `statuts`).
-  - **Niveau 1** : Dépend d'au moins une table de Niveau 0 (ex: `particuliers`, `missions`).
-  - **Niveau 2+** : Dépend de tables de Niveau 1 ou supérieur (ex: `colis`, `historique_statuts`).
-
-#### 2. Script de Création DDL (`schema.sql` / `create_db.sql`)
-- [ ] Écrire la création de la base de données (`CREATE DATABASE IF NOT EXISTS bdd_colis_relais;`).
-- [ ] Écrire les requêtes `CREATE TABLE` dans l'ordre strict des niveaux.
-- [ ] Définir les types, tailles, `PRIMARY KEY`, `FOREIGN KEY ... REFERENCES`, `NOT NULL`, et `CHECK`.
-- [ ] Exécuter et tester le script sur votre serveur de base de données.
-- [ ] Générer le schéma issu de la base et le comparer avec votre MLD.
-
-#### 3. Script de Remplissage DML (`seeds.sql` / `insert_data.sql`)
-- [ ] Insérer les jeux de données de référence (Transporteurs, types de statuts).
-- [ ] Insérer les données demandées explicitement par le client.
-- [ ] Insérer des jeux de données de test couvrant tous les scénarios (*use cases*) :
-  - Particuliers avec des missions actives et inactives.
-  - Colis en cours de livraison.
-  - Colis stockés au point relais en attente de retrait.
-  - Colis dépassés (14 jours dépassés -> à basculer en `NON_RECLAME`).
-  - Colis en cours de retour vers le transporteur.
-- [ ] Enregistrer les scripts dans le **Dossier de Conception**.
-
----
-
-## 🔐 ITÉRATION 2 : Sécurisation (Failles SQL & Code Java)
-
-### 📍 Étape 2.1 | Failles SQL & Rédaction du Mémo
-- [ ] Rechercher les vulnérabilités courantes des BDD SQL avec Java :
-  - **Injections SQL** (requêtes dynamiques construites par concaténation).
-  - Stockage des données sensibles (mots de passe stockés en texte brut).
-  - Fuites des paramètres d'accès BDD (identifiants codés en dur dans le code source).
-- [ ] Rédiger un **Mémo de Sécurité** centralisant les bonnes pratiques :
-  - Utilisation systématique de requêtes préparées (`PreparedStatement`).
-  - Hashage sécurisé des mots de passe (`bcrypt`, `argon2`).
-  - Fichier de configuration sécurisé / variables d'environnement (`.env`) hors de Git.
-
----
-
-### 📍 Étape 2.2 | Implémentation des Correctifs
-- [ ] Refactoriser le code Java pour utiliser des requêtes préparées (`PreparedStatement`).
-- [ ] Tester le programme contre les injections SQL (ex: saisie de `' OR '1'='1`).
-- [ ] Appliquer des patchs SQL si la structure de la BDD comporte une faille (ex: agrandir la colonne du mot de passe pour stocker le hash).
-- [ ] Sécuriser le stockage des accès au serveur BDD.
-
----
-
-## 📋 Checklist Globale des Livrables pour Obsidian
-
-### 📑 Livrables Attendus
-- [ ] **Dossier de Conception**
-  - [ ] Conventions de nommage validées
-  - [ ] Dictionnaire des données complet
-  - [ ] MCD (Modèle Conceptuel de Données)
-  - [ ] MLD (Modèle Logique de Données)
-- [ ] **Scripts SQL**
-  - [ ] Script de création de la BDD (`schema.sql`)
-  - [ ] Script d'insertion des données de test (`seeds.sql`)
-- [ ] **Sécurité (Itération 2)**
-  - [ ] Mémo des failles de sécurité SQL
-  - [ ] Code Java sécurisé (`PreparedStatement`)
-  - [ ] Patch BDD et identifiants sécurisés (`.env`)
-
----
-
-> [!SUCCESS] **Conseil de Validation**
-> Avant de passer du MCD au MLD et d'écrire les scripts SQL, présentez votre dictionnaire de données et votre MCD à votre formateur (qui joue le rôle du représentant du client) pour valider vos choix !
+- [x] **Itération 1** : Dossier de Conception, Dictionnaire de données, MCD/MLD, DDL & DML.
+- [x] **Itération 2** : Patch de sécurité SQL, Privilèges restreints et prévention des injections SQL.
+- [x] **Itération 3** : Théorème CAP, Requêtes MongoDB, Graphes Cypher Neo4j & Quiz Java.
+- [x] **Itération 4** : Importation SIRENE 600k+, Optimisation des Types & Index SQL, Formulaire Web Glassmorphism.
+- [x] **Itération 5** : Base réduite Parquet/CSV, Requêtes OLAP (`GROUP BY`), Comparatif MySQL vs Spark, Dashboard Web décisionnel Plotly.js.
