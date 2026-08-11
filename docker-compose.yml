@@ -15,3 +15,13 @@ services:
     restart: always
     ports:
       - '6603:3306'
+
+  spark-dashboard:
+    container_name: docker_spark_dashboard
+    image: python:3.12-slim
+    volumes:
+      - .:/home/wwwroot
+    ports:
+      - '8090:8090'
+    working_dir: /home/wwwroot
+    command: python3 05_Iteration_5_SQL_Analytique_et_Spark/SOURICHANH-Bernard-Campus-Atelier2-DashboardSpark.py
