@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analytique Spark — SIRENE Business Intelligence</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #070913;
+            --card-bg: rgba(18, 22, 41, 0.85);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --primary: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-pink: #f43f5e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding-bottom: 4rem;
+            background-image: 
+                radial-gradient(at 15% 15%, rgba(139, 92, 246, 0.18) 0px, transparent 55%),
+                radial-gradient(at 85% 85%, rgba(6, 182, 212, 0.15) 0px, transparent 55%),
+                radial-gradient(at 50% 50%, rgba(244, 63, 94, 0.1) 0px, transparent 60%);
+            background-attachment: fixed;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, #a78bfa 70%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+            margin-bottom: 2rem;
+            height: 100%;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-green);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        table {
+            color: var(--text-main);
+            font-size: 0.88rem;
+        }
+
+        thead th {
+            background: rgba(255, 255, 255, 0.04) !important;
+            color: var(--text-muted) !important;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            border-bottom: 1px solid var(--card-border) !important;
+        }
+
+        tbody td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+            vertical-align: middle;
+        }
+
+        .badge-cyan {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge-purple {
+            background: rgba(139, 92, 246, 0.15);
+            color: #c4b5fd;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .js-plotly-plot .plotly .main-svg {
+            background: transparent !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-20 text-primary-emphasis rounded-pill px-3 py-2 border border-primary border-opacity-30 mb-2">
+                ⚡ Apache Spark & Parquet In-Memory Engine
+            </span>
+            <h1 class="hero-title">Dashboard Decisionnel & Analytique SIRENE</h1>
+            <p class="text-muted">Analyse de masse des entreprises et établissements en France (Metropolitaine)</p>
+        </div>
+
+        <!-- KPIs -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="glass-card text-center py-3">
+                    <div class="stat-value" id="kpiCommunes">0</div>
+                    <div class="stat-label">Communes Analysées</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-card text-center py-3">
+                    <div class="stat-value" style="color:#38bdf8;" id="kpiDepts">96</div>
+                    <div class="stat-label">Départements Métro</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-card text-center py-3">
+                    <div class="stat-value" style="color:#c4b5fd;" id="kpiTime">0.00s</div>
+                    <div class="stat-label">Temps de Chargement Spark</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-card text-center py-3">
+                    <div class="stat-value" style="color:#f43f5e;" id="kpiMemory">In-Memory</div>
+                    <div class="stat-label">Stockage Datasets</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte de Chaleur France & Time Series -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <h5 class="fw-bold mb-3">🗺️ Carte de Chaleur par Département</h5>
+                    <div id="plotlyHeatmap" style="height: 380px;"></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <h5 class="fw-bold mb-3">📈 Évolution des Créations d'Entreprises (Time Series)</h5>
+                    <div id="plotlyTimeSeries" style="height: 380px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Activités NAF & Top Entreprises -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <h5 class="fw-bold mb-3">💼 Top 10 des Activités Principales (Codes NAF)</h5>
+                    <div id="plotlyActivitiesBar" style="height: 340px;"></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <h5 class="fw-bold mb-3">🏢 Top 10 Entreprises (Nombre d'Établissements)</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>SIREN</th>
+                                    <th>Raison Sociale / Groupe</th>
+                                    <th class="text-end">Établissements</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableEntreprises"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top / Flop Communes & Départements -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <h5 class="fw-bold mb-3">🏆 Top 10 & Flop 10 des Communes</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Rang</th>
+                                    <th>Commune (CP)</th>
+                                    <th>Département</th>
+                                    <th class="text-end">Établissements</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableCommunes"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <h5 class="fw-bold mb-3">📍 Top 10 & Flop 10 des Départements</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Département</th>
+                                    <th>Établissements</th>
+                                    <th>Sièges Sociaux</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableDepts"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadAnalyticsDashboard() {
+            try {
+                const res = await fetch('/api/analytics');
+                const data = await res.json();
+
+                document.getElementById('kpiCommunes').innerText = data.total_communes.toLocaleString();
+                document.getElementById('kpiDepts').innerText = data.total_departements;
+                document.getElementById('kpiTime').innerText = data.load_time_sec + 's';
+
+                // 1. Carte de Chaleur de la France par Département (Bar / Choropleth representation)
+                const deptsList = Object.keys(data.heatmap_depts).sort();
+                const deptsCounts = deptsList.map(d => data.heatmap_depts[d].count);
+
+                Plotly.newPlot('plotlyHeatmap', [{
+                    x: deptsList,
+                    y: deptsCounts,
+                    type: 'bar',
+                    marker: {
+                        color: deptsCounts,
+                        colorscale: 'Viridis'
+                    }
+                }], {
+                    margin: { t: 20, b: 40, l: 40, r: 20 },
+                    paper_bgcolor: 'transparent',
+                    plot_bgcolor: 'transparent',
+                    font: { color: '#94a3b8' },
+                    xaxis: { title: 'Département (01 à 95)' },
+                    yaxis: { title: 'Nombre d\'établissements' }
+                }, { responsive: true });
+
+                // 2. Time Series (Créations d'entreprises par année)
+                const annees = data.time_series_creations.map(x => x.annee);
+                const countsAnnee = data.time_series_creations.map(x => x.count);
+
+                Plotly.newPlot('plotlyTimeSeries', [{
+                    x: annees,
+                    y: countsAnnee,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    line: { color: '#06b6d4', width: 3 },
+                    marker: { size: 6, color: '#38bdf8' }
+                }], {
+                    margin: { t: 20, b: 40, l: 40, r: 20 },
+                    paper_bgcolor: 'transparent',
+                    plot_bgcolor: 'transparent',
+                    font: { color: '#94a3b8' },
+                    xaxis: { title: 'Année de création' },
+                    yaxis: { title: 'Nouvelles entreprises' }
+                }, { responsive: true });
+
+                // 3. Bar Chart Activités NAF
+                const acts = data.top_10_activites.map(x => x.act);
+                const countsAct = data.top_10_activites.map(x => x.count);
+
+                Plotly.newPlot('plotlyActivitiesBar', [{
+                    x: countsAct.reverse(),
+                    y: acts.reverse(),
+                    type: 'bar',
+                    orientation: 'h',
+                    marker: { color: '#8b5cf6' }
+                }], {
+                    margin: { t: 20, b: 40, l: 80, r: 20 },
+                    paper_bgcolor: 'transparent',
+                    plot_bgcolor: 'transparent',
+                    font: { color: '#94a3b8' }
+                }, { responsive: true });
+
+                // 4. Tableau Top Entreprises
+                const tbodyEnt = document.getElementById('tableEntreprises');
+                tbodyEnt.innerHTML = '';
+                data.top_10_entreprises.forEach(e => {
+                    tbodyEnt.innerHTML += `
+                        <tr>
+                            <td><span class="badge badge-purple">${e.siren}</span></td>
+                            <td><strong style="color:#fff;">${e.nom}</strong></td>
+                            <td class="text-end fw-bold text-success">${e.count.toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+
+                // 5. Tableau Communes Top/Flop
+                const tbodyCom = document.getElementById('tableCommunes');
+                tbodyCom.innerHTML = '';
+                data.top_10_communes.forEach((c, idx) => {
+                    tbodyCom.innerHTML += `
+                        <tr>
+                            <td><span class="badge bg-success bg-opacity-20 text-success">Top ${idx+1}</span></td>
+                            <td><strong>${c.commune}</strong> <small class="text-muted">(${c.cp})</small></td>
+                            <td><span class="badge badge-cyan">Dept ${c.dept}</span></td>
+                            <td class="text-end fw-bold">${c.count.toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+
+                // 6. Tableau Départements Top
+                const tbodyDept = document.getElementById('tableDepts');
+                tbodyDept.innerHTML = '';
+                data.top_10_depts.forEach(d => {
+                    tbodyDept.innerHTML += `
+                        <tr>
+                            <td><span class="badge badge-cyan">Département ${d.dept}</span></td>
+                            <td class="fw-bold">${d.count.toLocaleString()}</td>
+                            <td class="text-muted">${d.sieges.toLocaleString()} sièges</td>
+                        </tr>
+                    `;
+                });
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.onload = loadAnalyticsDashboard;
+    </script>
+</body>
+</html>
