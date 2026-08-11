@@ -28,28 +28,36 @@ public class SparkConfig {
                     .config("spark.sql.shuffle.partitions", "4")
                     .getOrCreate();
 
-            String parquetPath = "../sirene_analytique_commune.csv";
-            File f = new File(parquetPath);
-            if (!f.exists()) {
-                parquetPath = "05_Iteration_5_SQL_Analytique_et_Spark/sirene_analytique_commune.csv";
+            String csvPath = "../sirene_analytique_commune.csv";
+            if (!new File(csvPath).exists()) {
+                csvPath = "05_Iteration_5_SQL_Analytique_et_Spark/sirene_analytique_commune.csv";
             }
-            File f2 = new File(parquetPath);
-            if (!f2.exists()) {
-                parquetPath = "/home/wwwroot/05_Iteration_5_SQL_Analytique_et_Spark/sirene_analytique_commune.csv";
+            if (!new File(csvPath).exists()) {
+                csvPath = "/home/wwwroot/05_Iteration_5_SQL_Analytique_et_Spark/sirene_analytique_commune.csv";
             }
 
-            System.out.println(" 📖 Chargement In-Memory du Dataset Parquet/CSV : " + parquetPath);
-            if (new File(parquetPath).exists()) {
+            String parquetPath = csvPath.replace(".csv", ".parquet");
+
+            System.out.println(" 📖 Lecteur Spark Parquet / CSV : " + csvPath);
+            if (new File(csvPath).exists()) {
                 this.sireneParquetDataset = this.sparkSession.read()
                         .option("header", "true")
                         .option("inferSchema", "true")
-                        .csv(parquetPath)
+                        .csv(csvPath)
                         .cache();
+
+                // Export au format Parquet officiel si non présent
+                File parquetFile = new File(parquetPath);
+                if (!parquetFile.exists()) {
+                    System.out.println(" 💾 Écriture du fichier Parquet binaire : " + parquetPath);
+                    this.sireneParquetDataset.write().mode("overwrite").parquet(parquetPath);
+                    System.out.println(" ✅ FICHIER PARQUET GÉNÉRÉ AVEC SUCCÈS SUR LE DISQUE !");
+                }
 
                 this.sireneParquetDataset.createOrReplaceTempView("sirene_communes");
                 System.out.println(" ✅ DATASET SPARK EN MÉMOIRE RAM PRÊT : " + this.sireneParquetDataset.count() + " LIGNES !");
             } else {
-                System.out.println(" ⚠️ Fichier analytique non trouvé au chemin : " + parquetPath);
+                System.out.println(" ⚠️ Fichier analytique non trouvé au chemin : " + csvPath);
             }
         } catch (Exception e) {
             System.err.println(" ⚠️ Erreur lors du chargement Spark : " + e.getMessage());
