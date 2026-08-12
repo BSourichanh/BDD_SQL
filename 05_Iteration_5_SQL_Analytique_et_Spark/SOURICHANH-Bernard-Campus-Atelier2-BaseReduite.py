@@ -5,15 +5,13 @@ Convention : SOURICHANH-Bernard-Campus-Atelier2-BaseReduite.py
 
 Ce script lit les données SIRENE et crée la base la plus petite possible 
 formatée pour l'analytique par commune (Format Parquet & CSV ultra-léger),
-avec barre de progression dynamique en direct.
+avec barre de progression plafonnée à 100.0% maximum.
 """
 
 import os
 import sys
 import time
 import csv
-import json
-import sqlite3
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 CSV_DIR = os.path.join(PROJECT_ROOT, '06_Donnees_CSV')
@@ -26,13 +24,15 @@ FILE_UL = os.path.join(CSV_DIR, 'StockUniteLegale_utf8.csv')
 OUTPUT_PARQUET = os.path.join(os.path.dirname(__file__), 'sirene_analytique_commune.parquet')
 OUTPUT_CSV = os.path.join(os.path.dirname(__file__), 'sirene_analytique_commune.csv')
 
-def print_progress_bar(iteration, total, prefix='⏳ Progression SIRENE', suffix='Complet', length=35, fill='█'):
-    percent = f"{100 * (iteration / float(total)):.1f}"
-    filled_length = int(length * iteration // total)
+def print_progress_bar(iteration, total, prefix='⏳ Base Réduite', suffix='Complet', length=35, fill='█'):
+    total_val = max(total, 1)
+    current_val = min(iteration, total_val)
+    percent = f"{100 * (current_val / float(total_val)):.1f}"
+    filled_length = int(length * current_val // total_val)
     bar = fill * filled_length + '-' * (length - filled_length)
-    sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix} ({iteration:,} / {total:,})')
+    sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix} ({iteration:,} / {total_val:,})')
     sys.stdout.flush()
-    if iteration >= total:
+    if iteration >= total_val:
         sys.stdout.write('\n')
 
 def generate_reduced_analytic_database(limit_rows=600000):
@@ -51,7 +51,7 @@ def generate_reduced_analytic_database(limit_rows=600000):
     total_sieges = 0
 
     if not os.path.exists(FILE_ETAB):
-        print(f"⚠️ Fichier {FILE_ETAB} non trouvé, génération simulée BDD SQL...")
+        print(f"⚠️ Fichier {FILE_ETAB} non trouvé...")
         return
 
     print(f" 📖 Lecture optimisée avec BARRE DE PROGRESSION ({limit_rows:,} lignes)...")
@@ -63,13 +63,9 @@ def generate_reduced_analytic_database(limit_rows=600000):
             dept = cp[:2] if len(cp) >= 2 else '00'
             act = (row.get('activitePrincipaleEtablissement') or 'ND').strip().upper()
             is_siege = row.get('etablissementSiege') == 'true'
-            siren = row.get('siren') or (row.get('siret') or '')[:9]
-            date_crea = row.get('dateCreationEtablissement') or ''
-            annee = date_crea[:4] if len(date_crea) >= 4 and date_crea[:4].isdigit() else 'Non Renseigné'
 
-            # Mise à jour barre de progression tous les 5000 enregistrements
             if i % 5000 == 0 or i == limit_rows:
-                print_progress_bar(min(i, limit_rows), limit_rows, prefix='⏳ Base Réduite')
+                print_progress_bar(i, limit_rows, prefix='⏳ Base Réduite')
 
             if not commune:
                 continue
@@ -78,7 +74,6 @@ def generate_reduced_analytic_database(limit_rows=600000):
             if is_siege:
                 total_sieges += 1
 
-            # 1. Agrégation par Commune
             if commune not in communes_agg:
                 communes_agg[commune] = {
                     'commune': commune,
@@ -96,7 +91,6 @@ def generate_reduced_analytic_database(limit_rows=600000):
 
     print_progress_bar(limit_rows, limit_rows, prefix='⏳ Base Réduite')
 
-    # Écriture du fichier CSV analytique réduit
     with open(OUTPUT_CSV, 'w', encoding='utf-8', newline='') as f_out:
         writer = csv.writer(f_out)
         writer.writerow(['commune', 'code_postal', 'departement', 'nb_etablissements', 'nb_sieges'])

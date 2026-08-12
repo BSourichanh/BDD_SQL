@@ -5,7 +5,7 @@ LIVRABLE ATELIER 2 — COMPLÉMENT : GÉNÉRATION & TRAITEMENT DE LA BASE TOTALE
 Convention : SOURICHANH-Bernard-Campus-Atelier2-BaseTotale.py
 =============================================================================
 Ce script traite l'INTEGRALITÉ de la base SIRENE (43.8 millions d'établissements)
-et génère directement le fichier binaire PARQUET avec barre de progression en direct.
+et génère directement le fichier binaire PARQUET avec barre de progression plafonnée à 100.0%.
 """
 
 import os
@@ -25,12 +25,14 @@ OUTPUT_PARQUET = os.path.join(os.path.dirname(__file__), 'sirene_analytique_tota
 OUTPUT_CSV = os.path.join(os.path.dirname(__file__), 'sirene_analytique_totale.csv')
 
 def print_progress_bar(iteration, total, prefix='⏳ Base Totale', suffix='Complet', length=35, fill='█'):
-    percent = f"{100 * (iteration / float(max(total, 1))):.1f}"
-    filled_length = int(length * iteration // max(total, 1))
+    total_val = max(total, 1)
+    current_val = min(iteration, total_val)
+    percent = f"{100 * (current_val / float(total_val)):.1f}"
+    filled_length = int(length * current_val // total_val)
     bar = fill * filled_length + '-' * (length - filled_length)
-    sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix} ({iteration:,} / {total:,})')
+    sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix} ({iteration:,} / {total_val:,})')
     sys.stdout.flush()
-    if iteration >= total and total > 0:
+    if iteration >= total_val:
         sys.stdout.write('\n')
 
 def process_full_sirene_database():
@@ -64,8 +66,6 @@ def process_full_sirene_database():
     print(" 📖 Extraction et écriture de TOUS les établissements...")
     total_count = 0
     total_sieges = 0
-
-    # Compter approximativement les lignes pour la barre de progression (ex: 600,000)
     estimated_total = 600000
 
     with open(FILE_ETAB, 'r', encoding='utf-8') as f_in, open(OUTPUT_CSV, 'w', encoding='utf-8', newline='') as f_out:
