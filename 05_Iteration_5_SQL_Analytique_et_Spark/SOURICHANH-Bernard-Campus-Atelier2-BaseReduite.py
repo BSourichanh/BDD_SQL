@@ -5,7 +5,7 @@ Convention : SOURICHANH-Bernard-Campus-Atelier2-BaseReduite.py
 
 Ce script lit les données SIRENE et crée la base la plus petite possible 
 formatée pour l'analytique par commune (Format Parquet & CSV ultra-léger),
-avec barre de progression plafonnée à 100.0% maximum.
+avec barre de progression mono-ligne sans saut de ligne.
 """
 
 import os
@@ -24,7 +24,7 @@ FILE_UL = os.path.join(CSV_DIR, 'StockUniteLegale_utf8.csv')
 OUTPUT_PARQUET = os.path.join(os.path.dirname(__file__), 'sirene_analytique_commune.parquet')
 OUTPUT_CSV = os.path.join(os.path.dirname(__file__), 'sirene_analytique_commune.csv')
 
-def print_progress_bar(iteration, total, prefix='⏳ Base Réduite', suffix='Complet', length=35, fill='█'):
+def print_progress_bar(iteration, total, prefix='⏳ Base Réduite', suffix='Complet', length=35, fill='█', is_finished=False):
     total_val = max(total, 1)
     current_val = min(iteration, total_val)
     percent = f"{100 * (current_val / float(total_val)):.1f}"
@@ -32,7 +32,7 @@ def print_progress_bar(iteration, total, prefix='⏳ Base Réduite', suffix='Com
     bar = fill * filled_length + '-' * (length - filled_length)
     sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix} ({iteration:,} / {total_val:,})')
     sys.stdout.flush()
-    if iteration >= total_val:
+    if is_finished:
         sys.stdout.write('\n')
 
 def generate_reduced_analytic_database(limit_rows=600000):
@@ -64,7 +64,7 @@ def generate_reduced_analytic_database(limit_rows=600000):
             act = (row.get('activitePrincipaleEtablissement') or 'ND').strip().upper()
             is_siege = row.get('etablissementSiege') == 'true'
 
-            if i % 5000 == 0 or i == limit_rows:
+            if i % 10000 == 0 or i == limit_rows:
                 print_progress_bar(i, limit_rows, prefix='⏳ Base Réduite')
 
             if not commune:
@@ -89,7 +89,7 @@ def generate_reduced_analytic_database(limit_rows=600000):
             if i >= limit_rows:
                 break
 
-    print_progress_bar(limit_rows, limit_rows, prefix='⏳ Base Réduite')
+    print_progress_bar(limit_rows, limit_rows, prefix='⏳ Base Réduite', is_finished=True)
 
     with open(OUTPUT_CSV, 'w', encoding='utf-8', newline='') as f_out:
         writer = csv.writer(f_out)
