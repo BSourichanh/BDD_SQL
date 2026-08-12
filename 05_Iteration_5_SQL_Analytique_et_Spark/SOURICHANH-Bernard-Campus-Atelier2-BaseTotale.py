@@ -5,7 +5,7 @@ LIVRABLE ATELIER 2 — COMPLÉMENT : GÉNÉRATION & TRAITEMENT DE LA BASE TOTALE
 Convention : SOURICHANH-Bernard-Campus-Atelier2-BaseTotale.py
 =============================================================================
 Ce script traite l'INTEGRALITÉ de la base SIRENE (43.8 millions d'établissements)
-avec barre de progression dynamique mono-ligne sans saut de ligne intempestif.
+et génère le CSV complet de 3.5 Go et le dossier Parquet binaire.
 """
 
 import os
@@ -45,7 +45,7 @@ def process_full_sirene_database():
         print(f"⚠️ Fichier source {FILE_ETAB} introuvable dans {CSV_DIR}.")
         return
 
-    # Total exacts de la base INSEE réelle
+    # Totaux exacts de la base INSEE réelle
     total_ul_exact = 29922486
     total_etab_exact = 43896818
 
@@ -66,7 +66,7 @@ def process_full_sirene_database():
     print_progress_bar(len(unites_legales), total_ul_exact, prefix='⏳ Indexation UL', is_finished=True)
     print(f" ✅ {len(unites_legales):,} Unités Légales indexées en mémoire.")
 
-    # 2. Écriture du fichier CSV/Parquet unifié
+    # 2. Écriture du fichier CSV unifié
     print(" 📖 Extraction et écriture de TOUS les établissements...")
     total_count = 0
     total_sieges = 0
@@ -114,11 +114,24 @@ def process_full_sirene_database():
     size_csv_mb = round(os.path.getsize(OUTPUT_CSV) / (1024 * 1024), 2)
 
     print("\n" + "="*80)
-    print(f" ✅ BASE SIRENE TOTALE TRAITÉE AVEC SUCCÈS EN {t_duration} SECONDES !")
+    print(f" ✅ BASE SIRENE TOTALE COMPLÉTÉE EN {t_duration} SECONDES !")
     print(f"    • Total Établissements extraits : {total_count:,}")
     print(f"    • Total Sièges Sociaux         : {total_sieges:,}")
-    print(f"    • Fichier CSV complet          : {OUTPUT_CSV} ({size_csv_mb} Mo)")
-    print(f"    • Fichier PARQUET binaire      : {OUTPUT_PARQUET}")
+    print(f"    • Fichier CSV complet produit  : {OUTPUT_CSV} ({size_csv_mb} Mo)")
+
+    # 3. Tentative de conversion Parquet binaire
+    parquet_created = os.path.exists(OUTPUT_PARQUET)
+    if not parquet_created:
+        print("\n ⚡ GÉNÉRATION DU FICHIER BINAIRE PARQUET...")
+        cmd = f"sudo docker run --rm -v '{os.path.dirname(OUTPUT_CSV)}:/data' python:3.12-slim bash -c \"pip install duckdb && python3 -c \\\"import duckdb; duckdb.sql('COPY (SELECT * FROM read_csv_auto(\\\\\"/data/sirene_analytique_totale.csv\\\\\\")) TO \\\\\\"/data/sirene_analytique_totale.parquet\\\\\\" (FORMAT PARQUET)')\\\"\""
+        os.system(cmd)
+        parquet_created = os.path.exists(OUTPUT_PARQUET)
+
+    if parquet_created:
+        print(f"    • Fichier PARQUET binaire      : {OUTPUT_PARQUET} (Disponible !)")
+    else:
+        print(f"\n ⚠️ POUR GÉNÉRER LE FICHIER PARQUET DE 3.5 GO EN 15 SECONDES, LANCEZ :")
+        print(f"    👉 ./generer_parquet_total.sh")
     print("="*80 + "\n")
 
 if __name__ == '__main__':
