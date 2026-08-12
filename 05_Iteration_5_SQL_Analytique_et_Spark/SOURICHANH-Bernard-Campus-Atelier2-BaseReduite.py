@@ -21,22 +21,21 @@ if not os.path.exists(CSV_DIR):
 INPUT_CSV = os.path.join(CSV_DIR, 'StockEtablissement_utf8.csv')
 OUTPUT_CSV = os.path.join(os.path.dirname(__file__), 'sirene_analytique_reduite.csv')
 
-def print_progress_bar(iteration, total, prefix='⏳ Progress', suffix='Complet', length=35, fill='█', is_finished=False):
+def print_progress_bar(iteration, total, prefix='⏳ Progress', suffix='Complet', length=35, is_finished=False):
     total_val = max(total, 1)
     current_val = min(iteration, total_val)
     percent = f"{100 * (current_val / float(total_val)):.1f}"
     filled_length = int(length * current_val // total_val)
-    bar = fill * filled_length + '-' * (length - filled_length)
     
-    if sys.stdout.isatty():
-        sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix} ({current_val:,} / {total_val:,})')
+    # Barre ANSI Colorée (Vert & Gris)
+    bar = '\033[92m' + '#' * filled_length + '\033[90m' + '-' * (length - filled_length) + '\033[0m'
+    
+    msg = f"\r{prefix} |{bar}| {percent}% {suffix} ({current_val:,} / {total_val:,})"
+    sys.stdout.write(msg)
+    sys.stdout.flush()
+    if is_finished:
+        sys.stdout.write('\n')
         sys.stdout.flush()
-        if is_finished:
-            sys.stdout.write('\n')
-    else:
-        if is_finished or current_val % max(1, total_val // 10) == 0:
-            sys.stdout.write(f'{prefix} |{bar}| {percent}% {suffix} ({current_val:,} / {total_val:,})\n')
-            sys.stdout.flush()
 
 def process_base_reduite():
     print("="*80)
