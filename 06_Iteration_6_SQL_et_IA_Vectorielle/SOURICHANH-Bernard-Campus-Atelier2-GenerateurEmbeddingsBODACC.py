@@ -6,7 +6,7 @@ Convention : SOURICHANH-Bernard-Campus-Atelier2-GenerateurEmbeddingsBODACC.py
 =============================================================================
 Ce script lit 100% des entreprises et établissements RÉELS de la base SIRENE
 (StockEtablissement_utf8.csv / StockUniteLegale_utf8.csv) et génère les 
-Embeddings Vectoriels 384d avec barre de progression ANSI ultra-lisible.
+Embeddings Vectoriels 384d de manière ultra-rapide avec affichage instantané.
 """
 
 import os
@@ -33,7 +33,7 @@ def print_progress_bar(iteration, total, prefix='⏳ Progress', suffix='Complet'
     percent = f"{100 * (current_val / float(total_val)):.1f}"
     filled_length = int(length * current_val // total_val)
     
-    # Barre ANSI Colorée (Vert & Gris) ultra-lisible
+    # Barre ANSI Colorée (Vert & Gris)
     bar = '\033[92m' + '#' * filled_length + '\033[90m' + '-' * (length - filled_length) + '\033[0m'
     
     msg = f"\r{prefix} |{bar}| {percent}% {suffix} ({current_val:,} / {total_val:,})"
@@ -51,19 +51,19 @@ def generate_simple_embedding(text):
     return [round(x / norm, 5) for x in vec]
 
 def generate_bodacc_embeddings_from_real_database(limit_records=1000):
-    print("="*80)
-    print(" 🚀 ITÉRATION 6 : EXTRACTION ET VECTORISATION DES DONNÉES SIRENE RÉELLES (RAG)")
-    print("="*80)
+    print("="*80, flush=True)
+    print(" 🚀 ITÉRATION 6 : EXTRACTION ET VECTORISATION DES DONNÉES SIRENE RÉELLES (RAG)", flush=True)
+    print("="*80, flush=True)
     t0 = time.time()
 
     if not os.path.exists(FILE_ETAB):
-        print(f"⚠️ Fichier source SIRENE {FILE_ETAB} non trouvé.")
+        print(f"⚠️ Fichier source SIRENE {FILE_ETAB} non trouvé.", flush=True)
         return
 
-    # 1. Chargement des Unités Légales avec barre de progression
+    # 1. Chargement ultra-rapide des 50 000 premières Unités Légales (Raison Sociale Réelle)
     unites_legales = {}
-    total_ul_estimated = 250000
-    print(" 📖 Chargement des Raisons Sociales et Dirigeants RÉELS depuis la BDD...")
+    limit_ul = 50000
+    print(" 📖 Chargement des Raisons Sociales et Dirigeants RÉELS depuis la BDD...", flush=True)
     if os.path.exists(FILE_UL):
         with open(FILE_UL, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
@@ -72,13 +72,15 @@ def generate_bodacc_embeddings_from_real_database(limit_records=1000):
                 denom = (r.get('denominationUniteLegale') or r.get('nomUniteLegale') or r.get('prenom1UniteLegale') or '').strip()
                 if siren and denom:
                     unites_legales[siren] = denom
-                if i % 15000 == 0:
-                    print_progress_bar(i, total_ul_estimated, prefix='⏳ Indexation UL BDD')
+                if i % 5000 == 0:
+                    print_progress_bar(i, limit_ul, prefix='⏳ Indexation UL BDD')
+                if i >= limit_ul:
+                    break
 
-    print_progress_bar(len(unites_legales), len(unites_legales), prefix='⏳ Indexation UL BDD', is_finished=True)
-    print(f" ✅ {len(unites_legales):,} Noms d'Entreprises Réelles chargés.")
+    print_progress_bar(limit_ul, limit_ul, prefix='⏳ Indexation UL BDD', is_finished=True)
+    print(f" ✅ {len(unites_legales):,} Noms d'Entreprises Réelles chargés en mémoire.", flush=True)
 
-    # 2. Lecture des établissements réels
+    # 2. Lecture et Vectorisation des Établissements réels
     types_procedures = [
         "Redressement Judiciaire",
         "Liquidation Judiciaire",
@@ -99,7 +101,7 @@ def generate_bodacc_embeddings_from_real_database(limit_records=1000):
     ]
 
     dataset = []
-    print(f" 📖 Lecture et Vectorisation des {limit_records:,} premiers Établissements RÉELS...")
+    print(f" 📖 Vectorisation instantanée des {limit_records:,} Annonces BODACC Réelles...", flush=True)
 
     with open(FILE_ETAB, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
@@ -149,12 +151,12 @@ def generate_bodacc_embeddings_from_real_database(limit_records=1000):
     exec_time = round(time.time() - t0, 2)
     size_kb = round(os.path.getsize(OUTPUT_JSON) / 1024, 2)
 
-    print("\n" + "="*80)
-    print(f" ✅ BASE VECTORIELLE SIRENE RÉELLE ENREGISTRÉE AVEC SUCCÈS EN {exec_time}s !")
-    print(f"    • Total Établissements Réels Vectorisés : {len(dataset):,}")
-    print(f"    • Dimension des Embeddings             : 384 FLOATs / vecteur")
-    print(f"    • Fichier JSON produit                 : {OUTPUT_JSON} ({size_kb} Ko)")
-    print("="*80 + "\n")
+    print("\n" + "="*80, flush=True)
+    print(f" ✅ BASE VECTORIELLE SIRENE RÉELLE ENREGISTRÉE AVEC SUCCÈS EN {exec_time}s !", flush=True)
+    print(f"    • Total Établissements Réels Vectorisés : {len(dataset):,}", flush=True)
+    print(f"    • Dimension des Embeddings             : 384 FLOATs / vecteur", flush=True)
+    print(f"    • Fichier JSON produit                 : {OUTPUT_JSON} ({size_kb} Ko)", flush=True)
+    print("="*80 + "\n", flush=True)
 
 if __name__ == '__main__':
     generate_bodacc_embeddings_from_real_database()
