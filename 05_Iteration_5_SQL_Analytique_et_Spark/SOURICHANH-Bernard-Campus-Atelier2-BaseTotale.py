@@ -123,8 +123,9 @@ def process_full_sirene_database():
     parquet_created = os.path.exists(OUTPUT_PARQUET)
     if not parquet_created:
         print("\n ⚡ GÉNÉRATION DU FICHIER BINAIRE PARQUET...")
-        cmd = f"sudo docker run --rm -v '{os.path.dirname(OUTPUT_CSV)}:/data' python:3.12-slim bash -c \"pip install duckdb && python3 -c \\\"import duckdb; duckdb.sql('COPY (SELECT * FROM read_csv_auto(\\\\\"/data/sirene_analytique_totale.csv\\\\\\")) TO \\\\\\"/data/sirene_analytique_totale.parquet\\\\\\" (FORMAT PARQUET)')\\\"\""
-        os.system(cmd)
+        script_sh = os.path.join(os.path.dirname(__file__), 'generer_parquet_total.sh')
+        if os.path.exists(script_sh):
+            os.system(f"bash '{script_sh}'")
         parquet_created = os.path.exists(OUTPUT_PARQUET)
 
     if parquet_created:
@@ -133,6 +134,7 @@ def process_full_sirene_database():
         print(f"\n ⚠️ POUR GÉNÉRER LE FICHIER PARQUET DE 3.5 GO EN 15 SECONDES, LANCEZ :")
         print(f"    👉 ./generer_parquet_total.sh")
     print("="*80 + "\n")
+
 
 if __name__ == '__main__':
     process_full_sirene_database()
