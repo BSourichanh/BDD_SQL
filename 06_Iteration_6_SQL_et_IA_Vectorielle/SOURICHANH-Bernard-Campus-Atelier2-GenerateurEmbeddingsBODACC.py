@@ -6,11 +6,7 @@ Convention : SOURICHANH-Bernard-Campus-Atelier2-GenerateurEmbeddingsBODACC.py
 =============================================================================
 Ce script lit 100% des entreprises et établissements RÉELS de la base SIRENE
 (StockEtablissement_utf8.csv / StockUniteLegale_utf8.csv) et génère les 
-Embeddings Vectoriels 384d.
-
-Options de ligne de commande :
-  - Mode Rapide (Par défaut) : Traite 50,000 Unités Légales (Exécution en 0.68s).
-  - Mode Total (Option --full) : Traite 100% de la Base Sirene brute.
+Embeddings Vectoriels 384d avec la barre blanche élégante originale.
 """
 
 import os
@@ -31,13 +27,14 @@ FILE_UL = os.path.join(CSV_DIR, 'StockUniteLegale_utf8.csv')
 
 OUTPUT_JSON = os.path.join(os.path.dirname(__file__), 'bodacc_vector_dataset.json')
 
-def print_progress_bar(iteration, total, prefix='⏳ Progress', suffix='Complet', length=35, is_finished=False):
+def print_progress_bar(iteration, total, prefix='⏳ Progress', suffix='Complet', length=35, fill='█', is_finished=False):
     total_val = max(total, 1)
     current_val = min(iteration, total_val)
     percent = f"{100 * (current_val / float(total_val)):.1f}"
     filled_length = int(length * current_val // total_val)
     
-    bar = '\033[92m' + '#' * filled_length + '\033[90m' + '-' * (length - filled_length) + '\033[0m'
+    # Barre Blanche Élégante Originale (Bloc Plein █)
+    bar = fill * filled_length + '-' * (length - filled_length)
     
     msg = f"\r{prefix} |{bar}| {percent}% {suffix} ({current_val:,} / {total_val:,})"
     sys.stdout.write(msg)
@@ -77,7 +74,7 @@ def generate_bodacc_embeddings_from_real_database(is_full=False):
                 denom = (r.get('denominationUniteLegale') or r.get('nomUniteLegale') or r.get('prenom1UniteLegale') or '').strip()
                 if siren and denom:
                     unites_legales[siren] = denom
-                if i % 25000 == 0:
+                if i % 5000 == 0:
                     print_progress_bar(i, total_ul_estimated, prefix='⏳ Indexation UL BDD')
                 if limit_ul and i >= limit_ul:
                     break
@@ -145,7 +142,7 @@ def generate_bodacc_embeddings_from_real_database(is_full=False):
             }
             dataset.append(record)
 
-            if i % 500 == 0 or (limit_records and i == limit_records):
+            if i % 25 == 0 or (limit_records and i == limit_records):
                 print_progress_bar(i, limit_records or total_etab_estimated, prefix='⏳ Vectorisation RAG')
 
             if limit_records and len(dataset) >= limit_records:
