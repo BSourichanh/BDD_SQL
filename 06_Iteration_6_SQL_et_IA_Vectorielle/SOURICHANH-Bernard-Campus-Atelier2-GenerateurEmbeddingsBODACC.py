@@ -6,7 +6,7 @@ Convention : SOURICHANH-Bernard-Campus-Atelier2-GenerateurEmbeddingsBODACC.py
 =============================================================================
 Ce script lit 100% des entreprises et établissements RÉELS de la base SIRENE
 (StockEtablissement_utf8.csv / StockUniteLegale_utf8.csv) et génère les 
-Embeddings Vectoriels 384d avec double barre de progression en temps réel.
+Embeddings Vectoriels 384d avec double barre de progression TTY/Log.
 """
 
 import os
@@ -27,16 +27,22 @@ FILE_UL = os.path.join(CSV_DIR, 'StockUniteLegale_utf8.csv')
 
 OUTPUT_JSON = os.path.join(os.path.dirname(__file__), 'bodacc_vector_dataset.json')
 
-def print_progress_bar(iteration, total, prefix='⏳ Vectorisation BODACC', suffix='Complet', length=35, fill='█', is_finished=False):
+def print_progress_bar(iteration, total, prefix='⏳ Progress', suffix='Complet', length=35, fill='█', is_finished=False):
     total_val = max(total, 1)
     current_val = min(iteration, total_val)
     percent = f"{100 * (current_val / float(total_val)):.1f}"
     filled_length = int(length * current_val // total_val)
     bar = fill * filled_length + '-' * (length - filled_length)
-    sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix} ({iteration:,} / {total_val:,})')
-    sys.stdout.flush()
-    if is_finished:
-        sys.stdout.write('\n')
+    
+    if sys.stdout.isatty():
+        sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix} ({current_val:,} / {total_val:,})')
+        sys.stdout.flush()
+        if is_finished:
+            sys.stdout.write('\n')
+    else:
+        if is_finished or current_val % max(1, total_val // 10) == 0:
+            sys.stdout.write(f'{prefix} |{bar}| {percent}% {suffix} ({current_val:,} / {total_val:,})\n')
+            sys.stdout.flush()
 
 def generate_simple_embedding(text):
     """Génère un vecteur d'embedding normalisé de 384 dimensions (Compatible AllMiniLmL6V2)."""
@@ -130,7 +136,7 @@ def generate_bodacc_embeddings_from_real_database(limit_records=1000):
             }
             dataset.append(record)
 
-            if i % 25 == 0 or i == limit_records:
+            if i % 50 == 0 or i == limit_records:
                 print_progress_bar(i, limit_records, prefix='⏳ Vectorisation RAG')
 
             if len(dataset) >= limit_records:
