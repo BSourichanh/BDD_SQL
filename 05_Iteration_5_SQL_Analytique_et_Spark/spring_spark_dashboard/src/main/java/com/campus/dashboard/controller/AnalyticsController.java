@@ -62,6 +62,8 @@ public class AnalyticsController {
                 response.put("load_time_sec", 0.04);
                 response.put("total_communes", sireneParquetDataset.count());
                 response.put("total_departements", deptsList.size());
+                response.put("dataset_mode", "Base Réduite (50k / Démo Spark Rapide)");
+                response.put("dataset_type", "REDUITE");
                 response.put("filter_applied_dept", departement != null ? departement : "ALL");
                 response.put("heatmap_depts", heatmapDepts);
                 response.put("top_10_communes", topCommunesList);
@@ -76,6 +78,8 @@ public class AnalyticsController {
         response.putIfAbsent("load_time_sec", 0.01);
         response.putIfAbsent("total_communes", 26637);
         response.putIfAbsent("total_departements", 95);
+        response.putIfAbsent("dataset_mode", "Base Réduite (50 000 Établissements / Démo)");
+        response.putIfAbsent("dataset_type", "REDUITE");
 
         response.putIfAbsent("top_10_activites", List.of(
             Map.of("act", "10.71C", "count", 4520),

@@ -1,5 +1,0 @@
-com/campus/dashboard/controller/AnalyticsController.class
-com/campus/dashboard/ConvertTotaleToParquet.class
-com/campus/dashboard/controller/VectorSearchController.class
-com/campus/dashboard/DashboardApplication.class
-com/campus/dashboard/config/SparkConfig.class

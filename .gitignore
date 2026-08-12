@@ -1,13 +1,13 @@
-# Large Datasets & Archives (do not commit GBs/MBs of CSVs or ZIPs)
+# Ignorer les fichiers volumineux et générés par les scripts
+*.json
 *.csv
-*.zip
-05_Donnees_CSV/*.csv
-05_Donnees_CSV/*.zip
-04_Donnees_CSV/*.csv
-04_Donnees_CSV/*.zip
-
-# Temporary and log files
-*.log
+*.parquet
+target/
 __pycache__/
-*.pyc
 .DS_Store
+*.log
+IT2*
+IT3*
+
+# Ne pas ignorer le code source et la documentation markdown
+!06_Iteration_6_SQL_et_IA_Vectorielle/SOURICHANH-Bernard-Campus-Atelier2-GenerateurEmbeddingsBODACC.py
