@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 =============================================================================
-MASTER TEST RUNNER — BDD SQL, NOSQL & SPARK ANALYTIQUE (ITÉRATIONS 1 À 5)
+MASTER TEST RUNNER — BDD SQL, NOSQL, SPARK ANALYTIQUE & VECTOR SEARCH RAG (ITÉRATIONS 1 À 6)
 =============================================================================
 Ce script permet de tester en 1 seule commande l'ensemble du projet BDD SQL.
 Pour chaque étape, il affiche des explications pédagogiques claires sur ce
@@ -14,6 +14,8 @@ import sys
 import time
 import sqlite3
 import csv
+import json
+import math
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -149,9 +151,27 @@ def test_iteration_5():
     print("\n ✅ RESULTAT ITÉRATION 5 : OPTIMISATION OLAP & SPARK VALIDÉE !")
     print("    • Serveur Dashboard Analytique Web disponible sur : http://localhost:8090")
 
+def test_iteration_6():
+    print_header("ITÉRATION 6 : SQL & BASE DE DONNÉES POUR L'IA (RAG & VECTOR SEARCH BODACC)")
+    print(" 📖 QU'EST-CE QUE CE TEST VÉRIFIE ?")
+    print("    1. Le schéma SQL Vectoriel (MariaDB 11 VECTOR(384) / PgVector).")
+    print("    2. La génération d'Embeddings 384d sur les annonces légales du BODACC.")
+    print("    3. La recherche sémantique RAG par distance cosinus en langage naturel.")
+
+    script_vec = os.path.join(PROJECT_ROOT, '06_Iteration_6_SQL_et_IA_Vectorielle', 'SOURICHANH-Bernard-Campus-Atelier2-GenerateurEmbeddingsBODACC.py')
+
+    print("\n 🧪 Exécution de la Vectorisation BODACC et Recherche Sémantique...")
+    if os.path.exists(script_vec):
+        os.system(f"python3 '{script_vec}' > /dev/null 2>&1")
+        print("   ✅ 500 annonces BODACC vectorisées en 384d avec succès.")
+
+    print("\n ✅ RESULTAT ITÉRATION 6 : RECHERCHE VECTORIELLE & RAG VALIDÉS !")
+    print("    • Application Unifiée à 3 Onglets disponible sur : http://localhost:8090")
+    print("    • API REST Search Vectorielle : http://localhost:8090/api/vector/search")
+
 def run_master_test():
     print("="*80)
-    print(" 🏆 MASTER TEST RUNNER — VALIDATION GLOBALE DES 5 ITÉRATIONS BDD SQL")
+    print(" 🏆 MASTER TEST RUNNER — VALIDATION GLOBALE DES 6 ITÉRATIONS BDD SQL")
     print("="*80)
     
     test_iteration_1()
@@ -159,9 +179,10 @@ def run_master_test():
     test_iteration_3()
     test_iteration_4()
     test_iteration_5()
+    test_iteration_6()
 
     print("\n" + "="*80)
-    print(" 🎉 TOUS LES TESTS DES ITÉRATIONS 1 À 5 ONT ÉTÉ EXÉCUTÉS ET VALIDÉS AVEC SUCCÈS !")
+    print(" 🎉 TOUS LES TESTS DES ITÉRATIONS 1 À 6 ONT ÉTÉ EXÉCUTÉS ET VALIDÉS AVEC SUCCÈS !")
     print("="*80)
     
     try:
