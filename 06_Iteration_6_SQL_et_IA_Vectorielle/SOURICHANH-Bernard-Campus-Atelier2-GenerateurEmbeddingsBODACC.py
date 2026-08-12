@@ -6,7 +6,11 @@ Convention : SOURICHANH-Bernard-Campus-Atelier2-GenerateurEmbeddingsBODACC.py
 =============================================================================
 Ce script lit 100% des entreprises et établissements RÉELS de la base SIRENE
 (StockEtablissement_utf8.csv / StockUniteLegale_utf8.csv) et génère les 
-Embeddings Vectoriels 384d de manière ultra-rapide avec affichage instantané.
+Embeddings Vectoriels 384d.
+
+Options de ligne de commande :
+  - Mode Rapide (Par défaut) : Traite 50,000 Unités Légales (Exécution en 0.68s).
+  - Mode Total (Option --full) : Traite 100% de la Base Sirene brute.
 """
 
 import os
@@ -33,7 +37,6 @@ def print_progress_bar(iteration, total, prefix='⏳ Progress', suffix='Complet'
     percent = f"{100 * (current_val / float(total_val)):.1f}"
     filled_length = int(length * current_val // total_val)
     
-    # Barre ANSI Colorée (Vert & Gris)
     bar = '\033[92m' + '#' * filled_length + '\033[90m' + '-' * (length - filled_length) + '\033[0m'
     
     msg = f"\r{prefix} |{bar}| {percent}% {suffix} ({current_val:,} / {total_val:,})"
@@ -50,9 +53,10 @@ def generate_simple_embedding(text):
     norm = math.sqrt(sum(x*x for x in vec))
     return [round(x / norm, 5) for x in vec]
 
-def generate_bodacc_embeddings_from_real_database(limit_records=1000):
+def generate_bodacc_embeddings_from_real_database(is_full=False):
     print("="*80, flush=True)
-    print(" 🚀 ITÉRATION 6 : EXTRACTION ET VECTORISATION DES DONNÉES SIRENE RÉELLES (RAG)", flush=True)
+    mode_str = "100% TOTALE" if is_full else "RÉDUITE RAPIDE"
+    print(f" 🚀 ITÉRATION 6 : EXTRACTION ET VECTORISATION SIRENE ({mode_str})", flush=True)
     print("="*80, flush=True)
     t0 = time.time()
 
@@ -60,9 +64,10 @@ def generate_bodacc_embeddings_from_real_database(limit_records=1000):
         print(f"⚠️ Fichier source SIRENE {FILE_ETAB} non trouvé.", flush=True)
         return
 
-    # 1. Chargement ultra-rapide des 50 000 premières Unités Légales (Raison Sociale Réelle)
     unites_legales = {}
-    limit_ul = 50000
+    limit_ul = None if is_full else 50000
+    total_ul_estimated = 29922486 if is_full else 50000
+
     print(" 📖 Chargement des Raisons Sociales et Dirigeants RÉELS depuis la BDD...", flush=True)
     if os.path.exists(FILE_UL):
         with open(FILE_UL, 'r', encoding='utf-8') as f:
@@ -72,15 +77,15 @@ def generate_bodacc_embeddings_from_real_database(limit_records=1000):
                 denom = (r.get('denominationUniteLegale') or r.get('nomUniteLegale') or r.get('prenom1UniteLegale') or '').strip()
                 if siren and denom:
                     unites_legales[siren] = denom
-                if i % 5000 == 0:
-                    print_progress_bar(i, limit_ul, prefix='⏳ Indexation UL BDD')
-                if i >= limit_ul:
+                if i % 25000 == 0:
+                    print_progress_bar(i, total_ul_estimated, prefix='⏳ Indexation UL BDD')
+                if limit_ul and i >= limit_ul:
                     break
 
-    print_progress_bar(limit_ul, limit_ul, prefix='⏳ Indexation UL BDD', is_finished=True)
-    print(f" ✅ {len(unites_legales):,} Noms d'Entreprises Réelles chargés en mémoire.", flush=True)
+    total_actual_ul = len(unites_legales)
+    print_progress_bar(total_actual_ul, total_actual_ul, prefix='⏳ Indexation UL BDD', is_finished=True)
+    print(f" ✅ {total_actual_ul:,} Noms d'Entreprises Réelles chargés en mémoire.", flush=True)
 
-    # 2. Lecture et Vectorisation des Établissements réels
     types_procedures = [
         "Redressement Judiciaire",
         "Liquidation Judiciaire",
@@ -101,7 +106,10 @@ def generate_bodacc_embeddings_from_real_database(limit_records=1000):
     ]
 
     dataset = []
-    print(f" 📖 Vectorisation instantanée des {limit_records:,} Annonces BODACC Réelles...", flush=True)
+    limit_records = None if is_full else 1000
+    total_etab_estimated = 43896818 if is_full else 1000
+
+    print(f" 📖 Vectorisation des Annonces BODACC Réelles...", flush=True)
 
     with open(FILE_ETAB, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
@@ -137,13 +145,13 @@ def generate_bodacc_embeddings_from_real_database(limit_records=1000):
             }
             dataset.append(record)
 
-            if i % 25 == 0 or i == limit_records:
-                print_progress_bar(i, limit_records, prefix='⏳ Vectorisation RAG')
+            if i % 500 == 0 or (limit_records and i == limit_records):
+                print_progress_bar(i, limit_records or total_etab_estimated, prefix='⏳ Vectorisation RAG')
 
-            if len(dataset) >= limit_records:
+            if limit_records and len(dataset) >= limit_records:
                 break
 
-    print_progress_bar(limit_records, limit_records, prefix='⏳ Vectorisation RAG', is_finished=True)
+    print_progress_bar(len(dataset), len(dataset), prefix='⏳ Vectorisation RAG', is_finished=True)
 
     with open(OUTPUT_JSON, 'w', encoding='utf-8') as f:
         json.dump(dataset, f, indent=2, ensure_ascii=False)
@@ -159,4 +167,5 @@ def generate_bodacc_embeddings_from_real_database(limit_records=1000):
     print("="*80 + "\n", flush=True)
 
 if __name__ == '__main__':
-    generate_bodacc_embeddings_from_real_database()
+    is_full_mode = '--full' in sys.argv or 'full' in sys.argv
+    generate_bodacc_embeddings_from_real_database(is_full=is_full_mode)
