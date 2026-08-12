@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
 Script de test automatique pour exécuter les requêtes SQL analytiques
-de l'Atelier 2 (Exercices 2, 3 et 5).
+de l'Atelier 2 (Exercices 2, 3 et 5) avec barre de progression dynamique.
 """
 
 import os
+import sys
 import sqlite3
 import csv
 import time
@@ -15,6 +16,17 @@ if not os.path.exists(CSV_DIR):
     CSV_DIR = os.path.join(PROJECT_ROOT, '05_Donnees_CSV')
 
 FILE_ETAB = os.path.join(CSV_DIR, 'StockEtablissement_utf8.csv')
+
+def print_progress_bar(iteration, total, prefix='⏳ Chargement BDD', suffix='Complet', length=35, fill='█', is_finished=False):
+    total_val = max(total, 1)
+    current_val = min(iteration, total_val)
+    percent = f"{100 * (current_val / float(total_val)):.1f}"
+    filled_length = int(length * current_val // total_val)
+    bar = fill * filled_length + '-' * (length - filled_length)
+    sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix} ({iteration:,} / {total_val:,})')
+    sys.stdout.flush()
+    if is_finished:
+        sys.stdout.write('\n')
 
 def run_analytical_queries_test(limit_rows=100000):
     print("="*75)
@@ -35,11 +47,11 @@ def run_analytical_queries_test(limit_rows=100000):
     """)
 
     if os.path.exists(FILE_ETAB):
-        print(f" 📖 Chargement en BDD temporaire de {limit_rows:,} établissements...")
+        print(f" 📖 Chargement avec BARRE DE PROGRESSION de {limit_rows:,} établissements...")
         with open(FILE_ETAB, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             batch = []
-            for i, row in enumerate(reader):
+            for i, row in enumerate(reader, 1):
                 batch.append((
                     row.get('siret', ''),
                     row.get('siren', ''),
@@ -47,13 +59,15 @@ def run_analytical_queries_test(limit_rows=100000):
                     row.get('codePostalEtablissement', ''),
                     row.get('etablissementSiege', '')
                 ))
-                if len(batch) >= 20000:
+                if len(batch) >= 10000:
                     cursor.executemany("INSERT INTO etablissements VALUES (?,?,?,?,?)", batch)
                     batch = []
+                    print_progress_bar(i, limit_rows, prefix='⏳ Chargement BDD Test')
                 if i >= limit_rows:
                     break
             if batch:
                 cursor.executemany("INSERT INTO etablissements VALUES (?,?,?,?,?)", batch)
+                print_progress_bar(limit_rows, limit_rows, prefix='⏳ Chargement BDD Test', is_finished=True)
 
     cursor.execute("CREATE INDEX idx_commune ON etablissements(libelleCommuneEtablissement);")
     cursor.execute("CREATE INDEX idx_cp ON etablissements(codePostalEtablissement);")

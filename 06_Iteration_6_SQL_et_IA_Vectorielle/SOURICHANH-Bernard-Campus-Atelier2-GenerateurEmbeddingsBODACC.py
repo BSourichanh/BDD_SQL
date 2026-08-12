@@ -6,7 +6,7 @@ Convention : SOURICHANH-Bernard-Campus-Atelier2-GenerateurEmbeddingsBODACC.py
 =============================================================================
 Ce script lit 100% des entreprises et établissements RÉELS de la base SIRENE
 (StockEtablissement_utf8.csv / StockUniteLegale_utf8.csv) et génère les 
-Embeddings Vectoriels 384d sans AUCUNE donnée inventée.
+Embeddings Vectoriels 384d avec double barre de progression en temps réel.
 """
 
 import os
@@ -55,18 +55,22 @@ def generate_bodacc_embeddings_from_real_database(limit_records=1000):
         print(f"⚠️ Fichier source SIRENE {FILE_ETAB} non trouvé.")
         return
 
-    # 1. Chargement des Unités Légales (Raison Sociale Réelle)
+    # 1. Chargement des Unités Légales avec barre de progression
     unites_legales = {}
+    total_ul_estimated = 250000
     print(" 📖 Chargement des Raisons Sociales et Dirigeants RÉELS depuis la BDD...")
     if os.path.exists(FILE_UL):
         with open(FILE_UL, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
-            for r in reader:
+            for i, r in enumerate(reader, 1):
                 siren = r.get('siren', '').strip()
                 denom = (r.get('denominationUniteLegale') or r.get('nomUniteLegale') or r.get('prenom1UniteLegale') or '').strip()
                 if siren and denom:
                     unites_legales[siren] = denom
+                if i % 25000 == 0:
+                    print_progress_bar(i, total_ul_estimated, prefix='⏳ Indexation UL BDD')
 
+    print_progress_bar(len(unites_legales), len(unites_legales), prefix='⏳ Indexation UL BDD', is_finished=True)
     print(f" ✅ {len(unites_legales):,} Noms d'Entreprises Réelles chargés.")
 
     # 2. Lecture des établissements réels
@@ -126,13 +130,13 @@ def generate_bodacc_embeddings_from_real_database(limit_records=1000):
             }
             dataset.append(record)
 
-            if i % 50 == 0 or i == limit_records:
-                print_progress_bar(i, limit_records, prefix='⏳ Vectorisation BDD')
+            if i % 25 == 0 or i == limit_records:
+                print_progress_bar(i, limit_records, prefix='⏳ Vectorisation RAG')
 
             if len(dataset) >= limit_records:
                 break
 
-    print_progress_bar(limit_records, limit_records, prefix='⏳ Vectorisation BDD', is_finished=True)
+    print_progress_bar(limit_records, limit_records, prefix='⏳ Vectorisation RAG', is_finished=True)
 
     with open(OUTPUT_JSON, 'w', encoding='utf-8') as f:
         json.dump(dataset, f, indent=2, ensure_ascii=False)
