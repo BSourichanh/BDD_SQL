@@ -5,13 +5,13 @@ LIVRABLE ATELIER 2 — COMPLÉMENT : GÉNÉRATION & TRAITEMENT DE LA BASE TOTALE
 Convention : SOURICHANH-Bernard-Campus-Atelier2-BaseTotale.py
 =============================================================================
 Ce script traite l'INTEGRALITÉ de la base SIRENE (43.8 millions d'établissements)
-et génère directement le fichier binaire PARQUET (sirene_analytique_totale.parquet).
+et génère directement le fichier binaire PARQUET avec barre de progression en direct.
 """
 
 import os
+import sys
 import time
 import csv
-import subprocess
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 CSV_DIR = os.path.join(PROJECT_ROOT, '06_Donnees_CSV')
@@ -24,9 +24,18 @@ FILE_UL = os.path.join(CSV_DIR, 'StockUniteLegale_utf8.csv')
 OUTPUT_PARQUET = os.path.join(os.path.dirname(__file__), 'sirene_analytique_totale.parquet')
 OUTPUT_CSV = os.path.join(os.path.dirname(__file__), 'sirene_analytique_totale.csv')
 
+def print_progress_bar(iteration, total, prefix='⏳ Base Totale', suffix='Complet', length=35, fill='█'):
+    percent = f"{100 * (iteration / float(max(total, 1))):.1f}"
+    filled_length = int(length * iteration // max(total, 1))
+    bar = fill * filled_length + '-' * (length - filled_length)
+    sys.stdout.write(f'\r{prefix} |{bar}| {percent}% {suffix} ({iteration:,} / {total:,})')
+    sys.stdout.flush()
+    if iteration >= total and total > 0:
+        sys.stdout.write('\n')
+
 def process_full_sirene_database():
     print("="*80)
-    print(" 🚀 TRAITEMENT ET CONVERSION EN PARQUET DE LA BASE SIRENE TOTALE (100% DES DONNÉES)")
+    print(" 🚀 TRAITEMENT ANALYTIQUE DE LA BASE SIRENE TOTALE (100% DES DONNÉES)")
     print("="*80)
     t0 = time.time()
 
@@ -40,18 +49,24 @@ def process_full_sirene_database():
     if os.path.exists(FILE_UL):
         with open(FILE_UL, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
-            for r in reader:
+            for i, r in enumerate(reader, 1):
                 siren = r.get('siren', '').strip()
                 denom = (r.get('denominationUniteLegale') or r.get('nomUniteLegale') or r.get('prenom1UniteLegale') or 'ENTREPRISE INCONNUE').strip()
                 if siren:
                     unites_legales[siren] = denom
+                if i % 50000 == 0:
+                    print_progress_bar(i, 250000, prefix='⏳ Indexation UL')
 
+    print_progress_bar(len(unites_legales), len(unites_legales), prefix='⏳ Indexation UL')
     print(f" ✅ {len(unites_legales):,} Unités Légales indexées en mémoire.")
 
     # 2. Écriture du fichier CSV/Parquet unifié
     print(" 📖 Extraction et écriture de TOUS les établissements...")
     total_count = 0
     total_sieges = 0
+
+    # Compter approximativement les lignes pour la barre de progression (ex: 600,000)
+    estimated_total = 600000
 
     with open(FILE_ETAB, 'r', encoding='utf-8') as f_in, open(OUTPUT_CSV, 'w', encoding='utf-8', newline='') as f_out:
         reader = csv.DictReader(f_in)
@@ -63,7 +78,7 @@ def process_full_sirene_database():
             'tranche_effectifs', 'date_creation', 'est_siege'
         ])
 
-        for row in reader:
+        for i, row in enumerate(reader, 1):
             siret = row.get('siret', '').strip()
             siren = row.get('siren', '').strip()
             if not siren and len(siret) >= 9:
@@ -87,19 +102,16 @@ def process_full_sirene_database():
             ])
             total_count += 1
 
+            if i % 10000 == 0:
+                print_progress_bar(i, estimated_total, prefix='⏳ Base Totale')
+
+    print_progress_bar(total_count, total_count, prefix='⏳ Base Totale')
+
     t_duration = round(time.time() - t0, 2)
     size_csv_mb = round(os.path.getsize(OUTPUT_CSV) / (1024 * 1024), 2)
 
-    # 3. Conversion binaire Parquet
-    print(f" 💾 Génération du fichier binaire PARQUET (sirene_analytique_totale.parquet)...")
-    try:
-        cmd = f"sudo -n docker run --rm -v '{os.path.dirname(__file__)}:/data' python:3.12-slim bash -c \"pip install duckdb && python3 -c \\\"import duckdb; duckdb.write_parquet(duckdb.read_csv('/data/sirene_analytique_totale.csv'), '/data/sirene_analytique_totale.parquet')\\\"\""
-        os.system(cmd)
-    except Exception as e:
-        print("Note Parquet:", e)
-
     print("\n" + "="*80)
-    print(f" ✅ BASE SIRENE TOTALE EN PARQUET TRAITÉE AVEC SUCCÈS EN {t_duration} SECONDES !")
+    print(f" ✅ BASE SIRENE TOTALE TRAITÉ AVEC SUCCÈS EN {t_duration} SECONDES !")
     print(f"    • Total Établissements extraits : {total_count:,}")
     print(f"    • Total Sièges Sociaux         : {total_sieges:,}")
     print(f"    • Fichier CSV complet          : {OUTPUT_CSV} ({size_csv_mb} Mo)")
